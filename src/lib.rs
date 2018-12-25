@@ -34,8 +34,8 @@ pub fn vector_average(vec: Vector) -> f64 {
     vec.into_iter().sum::<f64>() / len
 }
 
-pub fn vector_matrix_multiplication(vec: Vector, mat: Matrix) -> Vector {
-    mat.into_iter().map(|w| dot(w, &vec)).collect()
+pub fn vector_matrix_multiplication(mat: Matrix, vec: &[f64]) -> Vector {
+    mat.into_iter().map(|w| dot(w, vec)).collect()
 }
 
 #[cfg(test)]

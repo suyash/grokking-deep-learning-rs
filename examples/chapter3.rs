@@ -89,7 +89,7 @@ fn predicting_with_multiple_inputs_and_outputs() {
 }
 
 fn neural_network_4(input: Vector, weights: Matrix) -> Vector {
-    vector_matrix_multiplication(input, weights)
+    vector_matrix_multiplication(weights, &input)
 }
 
 /// Predicting on Predictions
@@ -117,7 +117,7 @@ fn predicting_on_predictions() {
 
 fn neural_network_5(input: Vector, input_weights: Matrix, hidden1_weights: Matrix) -> Vector {
     vector_matrix_multiplication(
-        vector_matrix_multiplication(input, input_weights),
         hidden1_weights,
+        &vector_matrix_multiplication(input_weights, &input),
     )
 }
