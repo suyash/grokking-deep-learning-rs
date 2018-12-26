@@ -5,7 +5,7 @@
 extern crate grokking_deep_learning_rs;
 
 use grokking_deep_learning_rs::{
-    dot, elementwise_scalar_multiplication, vector_matrix_multiplication, Matrix, Vector,
+    dot, elementwise_scalar_multiplication, matrix_vector_multiplication, Matrix, Vector,
 };
 
 fn main() {
@@ -89,7 +89,7 @@ fn predicting_with_multiple_inputs_and_outputs() {
 }
 
 fn neural_network_4(input: Vector, weights: Matrix) -> Vector {
-    vector_matrix_multiplication(weights, &input)
+    matrix_vector_multiplication(weights, &input)
 }
 
 /// Predicting on Predictions
@@ -116,8 +116,8 @@ fn predicting_on_predictions() {
 }
 
 fn neural_network_5(input: Vector, input_weights: Matrix, hidden1_weights: Matrix) -> Vector {
-    vector_matrix_multiplication(
+    matrix_vector_multiplication(
         hidden1_weights,
-        &vector_matrix_multiplication(input_weights, &input),
+        &matrix_vector_multiplication(input_weights, &input),
     )
 }

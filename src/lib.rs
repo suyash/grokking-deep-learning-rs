@@ -21,7 +21,7 @@ pub fn elementwise_scalar_multiplication(vec: Vector, n: f64) -> Vector {
     vec.into_iter().map(|x| x * n).collect()
 }
 
-pub fn elementwise_addition(vec_a: Vector, vec_b: Vector) -> Vector {
+pub fn elementwise_addition(vec_a: Vector, vec_b: &[f64]) -> Vector {
     vec_a
         .into_iter()
         .zip(vec_b.iter())
@@ -34,7 +34,7 @@ pub fn vector_average(vec: Vector) -> f64 {
     vec.into_iter().sum::<f64>() / len
 }
 
-pub fn vector_matrix_multiplication(mat: Matrix, vec: &[f64]) -> Vector {
+pub fn matrix_vector_multiplication(mat: Matrix, vec: &[f64]) -> Vector {
     mat.into_iter().map(|w| dot(w, vec)).collect()
 }
 
@@ -62,7 +62,7 @@ mod tests {
     fn test_elementwise_addition() {
         assert_eq!(
             vec![7.0, 9.0, 11.0, 13.0, 5.0],
-            elementwise_addition(vec![1.0, 2.0, 3.0, 4.0, 5.0], vec![6.0, 7.0, 8.0, 9.0, 0.0],),
+            elementwise_addition(vec![1.0, 2.0, 3.0, 4.0, 5.0], &vec![6.0, 7.0, 8.0, 9.0, 0.0],),
         )
     }
 
@@ -94,8 +94,7 @@ mod tests {
     fn test_vector_matrix_multiplication() {
         assert_eq!(
             vec![55.0, 45.0, 40.0, 40.0, 35.0],
-            vector_matrix_multiplication(
-                vec![1.0, 2.0, 3.0, 4.0, 5.0],
+            matrix_vector_multiplication(
                 vec![
                     vec![1.0, 2.0, 3.0, 4.0, 5.0],
                     vec![2.0, 3.0, 4.0, 5.0, 1.0],
@@ -103,6 +102,7 @@ mod tests {
                     vec![4.0, 5.0, 1.0, 2.0, 3.0],
                     vec![5.0, 4.0, 3.0, 2.0, 1.0],
                 ],
+                &vec![1.0, 2.0, 3.0, 4.0, 5.0],
             ),
         );
     }
