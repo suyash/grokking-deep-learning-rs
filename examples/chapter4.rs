@@ -1,5 +1,3 @@
-extern crate grokking_deep_learning_rs;
-
 fn main() {
     println!("\nLearning using hot and cold method\n");
     hot_and_cold_method();

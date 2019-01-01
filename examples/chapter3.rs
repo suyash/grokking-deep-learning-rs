@@ -2,8 +2,6 @@
 //!
 //! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter3%20-%20%20Forward%20Propagation%20-%20Intro%20to%20Neural%20Prediction.ipynb
 
-extern crate grokking_deep_learning_rs;
-
 use grokking_deep_learning_rs::{
     dot, elementwise_scalar_multiplication, matrix_vector_multiplication, Matrix, Vector,
 };
