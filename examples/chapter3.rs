@@ -49,7 +49,7 @@ fn making_a_prediction_with_multiple_inputs() {
 }
 
 fn neural_network_2(input: Vec<f64>, weights: Vec<f64>) -> f64 {
-    dot(input, &weights)
+    dot(&input, &weights)
 }
 
 /// Making a prediction with multiple outputs
@@ -65,7 +65,7 @@ fn making_a_prediction_with_multiple_outputs() {
 }
 
 fn neural_network_3(input: f64, weights: Vec<f64>) -> Vec<f64> {
-    elementwise_scalar_multiplication(weights, input)
+    elementwise_scalar_multiplication(&weights, input)
 }
 
 /// Predicting with multiple inputs and outputs
@@ -87,7 +87,7 @@ fn predicting_with_multiple_inputs_and_outputs() {
 }
 
 fn neural_network_4(input: Vector, weights: Matrix) -> Vector {
-    matrix_vector_multiplication(weights, &input)
+    matrix_vector_multiplication(&weights, &input)
 }
 
 /// Predicting on Predictions
@@ -115,7 +115,7 @@ fn predicting_on_predictions() {
 
 fn neural_network_5(input: Vector, input_weights: Matrix, hidden1_weights: Matrix) -> Vector {
     matrix_vector_multiplication(
-        hidden1_weights,
-        &matrix_vector_multiplication(input_weights, &input),
+        &hidden1_weights,
+        &matrix_vector_multiplication(&input_weights, &input),
     )
 }

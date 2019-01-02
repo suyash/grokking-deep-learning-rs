@@ -33,12 +33,12 @@ fn gradient_descent_with_multiple_inputs() {
     let win_or_lose_binary = [1.0, 1.0, 0.0, 1.0];
     let truth = win_or_lose_binary[0];
 
-    let pred = neural_network_1(input.clone(), &weights);
+    let pred = neural_network_1(&input, &weights);
     let error = (pred - truth).powf(2.0);
     println!("Error: {}, Prediction: {}", error, pred);
 
     let delta = pred - truth;
-    let weight_delta = elementwise_scalar_multiplication(input, delta);
+    let weight_delta = elementwise_scalar_multiplication(&input, delta);
 
     let alpha = 0.01;
     for i in 0..3 {
@@ -47,7 +47,7 @@ fn gradient_descent_with_multiple_inputs() {
     println!("Weights: {:?}, Weight Deltas: {:?}", weights, weight_delta);
 }
 
-fn neural_network_1(input: Vector, weights: &[f64]) -> f64 {
+fn neural_network_1(input: &Vector, weights: &Vector) -> f64 {
     dot(input, weights)
 }
 
@@ -70,12 +70,12 @@ fn gradient_descent_with_multiple_inputs_iterations() {
     for i in 0..3 {
         println!("Iteration {}", i + 1);
 
-        let pred = neural_network_1(input.clone(), &weights);
+        let pred = neural_network_1(&input, &weights);
         let error = (pred - truth).powf(2.0);
         println!("Error: {}, Prediction: {}", error, pred);
 
         let delta = pred - truth;
-        let weight_delta = elementwise_scalar_multiplication(input.clone(), delta);
+        let weight_delta = elementwise_scalar_multiplication(&input, delta);
 
         for i in 0..3 {
             weights[i] -= alpha * weight_delta[i];
@@ -106,12 +106,12 @@ fn gradient_descent_with_multiple_inputs_frozen_weights() {
     for i in 0..3 {
         println!("Iteration {}", i + 1);
 
-        let pred = neural_network_1(input.clone(), &weights);
+        let pred = neural_network_1(&input, &weights);
         let error = (pred - truth).powf(2.0);
         println!("Error: {}, Prediction: {}", error, pred);
 
         let delta = pred - truth;
-        let mut weight_delta = elementwise_scalar_multiplication(input.clone(), delta);
+        let mut weight_delta = elementwise_scalar_multiplication(&input, delta);
         weight_delta[0] = 0.0;
 
         for i in 0..3 {
@@ -140,7 +140,7 @@ fn gradient_descent_with_multiple_outputs() {
 
     let alpha = 0.1;
 
-    let pred = neural_network_2(input, weights.clone());
+    let pred = neural_network_2(input, &weights);
     let error: Vector = pred
         .iter()
         .zip(truth.iter())
@@ -151,7 +151,7 @@ fn gradient_descent_with_multiple_outputs() {
     let deltas: Vector = pred.iter().zip(truth.iter()).map(|(x, y)| x - y).collect();
 
     // NOTE: mistake in book.
-    let weight_deltas: Vector = elementwise_scalar_multiplication(deltas, input);
+    let weight_deltas: Vector = elementwise_scalar_multiplication(&deltas, input);
 
     for i in 0..weight_deltas.len() {
         weights[i] -= weight_deltas[i] * alpha;
@@ -160,7 +160,7 @@ fn gradient_descent_with_multiple_outputs() {
     println!("Weights: {:?}, Weight Deltas: {:?}", weights, weight_deltas);
 }
 
-fn neural_network_2(input: f64, weights: Vector) -> Vector {
+fn neural_network_2(input: f64, weights: &Vector) -> Vector {
     elementwise_scalar_multiplication(weights, input)
 }
 
@@ -185,7 +185,7 @@ fn gradient_descent_with_multiple_inputs_and_outputs() {
 
     let alpha = 0.01;
 
-    let pred = neural_network_3(&inputs, weights.clone());
+    let pred = neural_network_3(&inputs, &weights);
     let errors: Vector = pred
         .iter()
         .zip(truth.iter())
@@ -197,7 +197,7 @@ fn gradient_descent_with_multiple_inputs_and_outputs() {
     let deltas: Vector = pred.iter().zip(truth.iter()).map(|(p, t)| p - t).collect();
     let weight_deltas: Matrix = deltas
         .iter()
-        .map(|i| elementwise_scalar_multiplication(inputs.clone(), *i))
+        .map(|i| elementwise_scalar_multiplication(&inputs, *i))
         .collect();
 
     for i in 0..weights.len() {
@@ -210,6 +210,6 @@ fn gradient_descent_with_multiple_inputs_and_outputs() {
     println!("Weights: {:?}, Weight Deltas: {:?}", weights, weight_deltas);
 }
 
-fn neural_network_3(inputs: &Vector, weights: Matrix) -> Vector {
+fn neural_network_3(inputs: &Vector, weights: &Matrix) -> Vector {
     matrix_vector_multiplication(weights, inputs)
 }
