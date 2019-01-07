@@ -2,11 +2,7 @@ pub type Vector = Vec<f64>;
 pub type Matrix = Vec<Vec<f64>>;
 
 pub fn elementwise_multiplication(vec_a: &Vector, vec_b: &Vector) -> Vector {
-    vec_a
-        .iter()
-        .zip(vec_b.iter())
-        .map(|(a, b)| a * b)
-        .collect()
+    vec_a.iter().zip(vec_b.iter()).map(|(a, b)| a * b).collect()
 }
 
 pub fn vector_sum(vec: Vector) -> f64 {
@@ -22,11 +18,7 @@ pub fn elementwise_scalar_multiplication(vec: &Vector, n: f64) -> Vector {
 }
 
 pub fn elementwise_addition(vec_a: &Vector, vec_b: &Vector) -> Vector {
-    vec_a
-        .iter()
-        .zip(vec_b.iter())
-        .map(|(a, b)| a + b)
-        .collect()
+    vec_a.iter().zip(vec_b.iter()).map(|(a, b)| a + b).collect()
 }
 
 pub fn vector_average(vec: &Vector) -> f64 {
