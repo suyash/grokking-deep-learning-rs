@@ -1,7 +1,7 @@
 use rand::distributions::Standard;
 
 use grokking_deep_learning_rs::{
-    dot, matrix_matrix_dot, random_matrix, relu_matrix, relu_vector, relu_vector_deriv,
+    dot, matrix_matrix_dot, random_matrix, relu_matrix, relu_vector, relu_vector_derivative,
     vector_matrix_dot, vector_vector_multiplication, Matrix,
 };
 
@@ -158,7 +158,7 @@ fn backpropagation() {
             let delta_2_1 = prediction - outputs[i][0];
             let delta_1_0 = vector_vector_multiplication(
                 &weights_1_2.iter().map(|v| v[0] * delta_2_1).collect(),
-                &relu_vector_deriv(&hidden_layer),
+                &relu_vector_derivative(&hidden_layer),
             );
 
             let weight_deltas_1_2: Matrix =

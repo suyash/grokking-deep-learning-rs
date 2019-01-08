@@ -89,7 +89,7 @@ pub fn relu_vector(v: &Vector) -> Vector {
     v.iter().map(|a| if a > &0.0 { *a } else { 0.0 }).collect()
 }
 
-pub fn relu_vector_deriv(v: &Vector) -> Vector {
+pub fn relu_vector_derivative(v: &Vector) -> Vector {
     v.iter().map(|a| if a > &0.0 { 1.0 } else { 0.0 }).collect()
 }
 
@@ -97,8 +97,8 @@ pub fn relu_matrix(m: &Matrix) -> Matrix {
     m.iter().map(|v| relu_vector(v)).collect()
 }
 
-pub fn relu_matrix_deriv(m: &Matrix) -> Matrix {
-    m.iter().map(|v| relu_vector_deriv(v)).collect()
+pub fn relu_matrix_derivative(m: &Matrix) -> Matrix {
+    m.iter().map(|v| relu_vector_derivative(v)).collect()
 }
 
 pub fn transpose(m: &Matrix) -> Matrix {
