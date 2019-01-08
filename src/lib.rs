@@ -1,3 +1,6 @@
+use rand::distributions::Distribution;
+use rand::{thread_rng, Rng};
+
 pub type Vector = Vec<f64>;
 pub type Matrix = Vec<Vec<f64>>;
 
@@ -26,6 +29,10 @@ pub fn vector_average(vec: &Vector) -> f64 {
     vec.iter().sum::<f64>() / len
 }
 
+pub fn vector_vector_subtraction(v1: &Vector, v2: &Vector) -> Vector {
+    v1.iter().zip(v2.iter()).map(|(a, b)| a - b).collect()
+}
+
 pub fn vector_vector_multiplication(v1: &Vector, v2: &Vector) -> Vector {
     v1.iter().zip(v2.iter()).map(|(a, b)| a * b).collect()
 }
@@ -36,6 +43,13 @@ pub fn vector_matrix_dot(vec: &Vector, mat: &Matrix) -> Vector {
 
 pub fn matrix_vector_dot(mat: &Matrix, vec: &Vector) -> Vector {
     mat.iter().map(|w| dot(w, vec)).collect()
+}
+
+pub fn matrix_matrix_subtraction(mat1: &Matrix, mat2: &Matrix) -> Matrix {
+    mat1.iter()
+        .zip(mat2.iter())
+        .map(|(v1, v2)| vector_vector_subtraction(v1, v2))
+        .collect()
 }
 
 pub fn matrix_matrix_multiplication(mat1: &Matrix, mat2: &Matrix) -> Matrix {
@@ -55,6 +69,44 @@ pub fn matrix_matrix_dot(mat1: &Matrix, mat2: &Matrix) -> Matrix {
             for k in 0..mat2.len() {
                 ans[i][j] += mat1[i][k] * mat2[k][j];
             }
+        }
+    }
+
+    ans
+}
+
+pub fn random_matrix(rows: usize, columns: usize, dist: &impl Distribution<f64>) -> Matrix {
+    (0..rows)
+        .map(|_| {
+            (0..columns)
+                .map(|_| 2.0 * thread_rng().sample(dist) - 1.0)
+                .collect()
+        })
+        .collect()
+}
+
+pub fn relu_vector(v: &Vector) -> Vector {
+    v.iter().map(|a| if a > &0.0 { *a } else { 0.0 }).collect()
+}
+
+pub fn relu_vector_deriv(v: &Vector) -> Vector {
+    v.iter().map(|a| if a > &0.0 { 1.0 } else { 0.0 }).collect()
+}
+
+pub fn relu_matrix(m: &Matrix) -> Matrix {
+    m.iter().map(|v| relu_vector(v)).collect()
+}
+
+pub fn relu_matrix_deriv(m: &Matrix) -> Matrix {
+    m.iter().map(|v| relu_vector_deriv(v)).collect()
+}
+
+pub fn transpose(m: &Matrix) -> Matrix {
+    let mut ans = vec![vec![0.0; m.len()]; m[0].len()];
+
+    for i in 0..m.len() {
+        for j in 0..m[0].len() {
+            ans[j][i] = m[i][j];
         }
     }
 
@@ -117,10 +169,10 @@ mod tests {
     }
 
     #[test]
-    fn test_vector_matrix_multiplication() {
+    fn test_matrix_vector_dot() {
         assert_eq!(
             vec![55.0, 45.0, 40.0, 40.0, 35.0],
-            matrix_vector_multiplication(
+            matrix_vector_dot(
                 &vec![
                     vec![1.0, 2.0, 3.0, 4.0, 5.0],
                     vec![2.0, 3.0, 4.0, 5.0, 1.0],
@@ -130,6 +182,14 @@ mod tests {
                 ],
                 &vec![1.0, 2.0, 3.0, 4.0, 5.0],
             ),
+        );
+    }
+
+    #[test]
+    fn test_relu_vector() {
+        assert_eq!(
+            vec![1.0, 0.0, 2.0, 0.0, 4.0],
+            relu_vector(&vec![1.0, -1.0, 2.0, -2.0, 4.0]),
         );
     }
 }
