@@ -26,8 +26,39 @@ pub fn vector_average(vec: &Vector) -> f64 {
     vec.iter().sum::<f64>() / len
 }
 
-pub fn matrix_vector_multiplication(mat: &Matrix, vec: &Vector) -> Vector {
+pub fn vector_vector_multiplication(v1: &Vector, v2: &Vector) -> Vector {
+    v1.iter().zip(v2.iter()).map(|(a, b)| a * b).collect()
+}
+
+pub fn vector_matrix_dot(vec: &Vector, mat: &Matrix) -> Vector {
+    matrix_vector_dot(&transpose(mat), vec)
+}
+
+pub fn matrix_vector_dot(mat: &Matrix, vec: &Vector) -> Vector {
     mat.iter().map(|w| dot(w, vec)).collect()
+}
+
+pub fn matrix_matrix_multiplication(mat1: &Matrix, mat2: &Matrix) -> Matrix {
+    mat1.iter()
+        .zip(mat2.iter())
+        .map(|(v1, v2)| vector_vector_multiplication(v1, v2))
+        .collect()
+}
+
+pub fn matrix_matrix_dot(mat1: &Matrix, mat2: &Matrix) -> Matrix {
+    assert_eq!(mat1[0].len(), mat2.len());
+
+    let mut ans = vec![vec![0.0; mat2[0].len()]; mat1.len()];
+
+    for i in 0..mat1.len() {
+        for j in 0..mat2[0].len() {
+            for k in 0..mat2.len() {
+                ans[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+
+    ans
 }
 
 #[cfg(test)]

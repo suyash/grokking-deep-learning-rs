@@ -1,5 +1,5 @@
 use grokking_deep_learning_rs::{
-    dot, elementwise_scalar_multiplication, matrix_vector_multiplication, Matrix, Vector,
+    dot, elementwise_scalar_multiplication, matrix_vector_dot, Matrix, Vector,
 };
 
 fn main() {
@@ -211,5 +211,5 @@ fn gradient_descent_with_multiple_inputs_and_outputs() {
 }
 
 fn neural_network_3(inputs: &Vector, weights: &Matrix) -> Vector {
-    matrix_vector_multiplication(weights, inputs)
+    matrix_vector_dot(weights, inputs)
 }

@@ -3,7 +3,7 @@
 //! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter3%20-%20%20Forward%20Propagation%20-%20Intro%20to%20Neural%20Prediction.ipynb
 
 use grokking_deep_learning_rs::{
-    dot, elementwise_scalar_multiplication, matrix_vector_multiplication, Matrix, Vector,
+    dot, elementwise_scalar_multiplication, matrix_vector_dot, Matrix, Vector,
 };
 
 fn main() {
@@ -87,7 +87,7 @@ fn predicting_with_multiple_inputs_and_outputs() {
 }
 
 fn neural_network_4(input: Vector, weights: Matrix) -> Vector {
-    matrix_vector_multiplication(&weights, &input)
+    matrix_vector_dot(&weights, &input)
 }
 
 /// Predicting on Predictions
@@ -114,8 +114,5 @@ fn predicting_on_predictions() {
 }
 
 fn neural_network_5(input: Vector, input_weights: Matrix, hidden1_weights: Matrix) -> Vector {
-    matrix_vector_multiplication(
-        &hidden1_weights,
-        &matrix_vector_multiplication(&input_weights, &input),
-    )
+    matrix_vector_dot(&hidden1_weights, &matrix_vector_dot(&input_weights, &input))
 }
