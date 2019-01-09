@@ -1,6 +1,3 @@
-use rand::distributions::Distribution;
-use rand::{thread_rng, Rng};
-
 pub type Vector = Vec<f64>;
 pub type Matrix = Vec<Vec<f64>>;
 
@@ -73,16 +70,6 @@ pub fn matrix_matrix_dot(mat1: &Matrix, mat2: &Matrix) -> Matrix {
     }
 
     ans
-}
-
-pub fn random_matrix(rows: usize, columns: usize, dist: &impl Distribution<f64>) -> Matrix {
-    (0..rows)
-        .map(|_| {
-            (0..columns)
-                .map(|_| 2.0 * thread_rng().sample(dist) - 1.0)
-                .collect()
-        })
-        .collect()
 }
 
 pub fn relu_vector(v: &Vector) -> Vector {

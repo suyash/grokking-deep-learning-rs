@@ -1,8 +1,9 @@
-use rand::distributions::Standard;
+use rand::distributions::{Distribution, Standard};
+use rand::{thread_rng, Rng};
 
 use grokking_deep_learning_rs::{
-    dot, matrix_matrix_dot, random_matrix, relu_matrix, relu_vector, relu_vector_derivative,
-    vector_matrix_dot, vector_vector_multiplication, Matrix,
+    dot, matrix_matrix_dot, relu_matrix, relu_vector, relu_vector_derivative, vector_matrix_dot,
+    vector_vector_multiplication, Matrix,
 };
 
 fn main() {
@@ -186,4 +187,14 @@ fn backpropagation() {
             println!("Error: {}", total_error);
         }
     }
+}
+
+fn random_matrix(rows: usize, columns: usize, dist: &impl Distribution<f64>) -> Matrix {
+    (0..rows)
+        .map(|_| {
+            (0..columns)
+                .map(|_| 2.0 * thread_rng().sample(dist) - 1.0)
+                .collect()
+        })
+        .collect()
 }
