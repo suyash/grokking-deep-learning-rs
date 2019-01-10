@@ -115,7 +115,7 @@ fn first_deep_neural_network() {
     let mut weights_1: Matrix = random_matrix(3, hidden_size, &Standard);
     let mut weights_2: Matrix = random_matrix(hidden_size, 1, &Standard);
 
-    let hidden_layer = relu_matrix(&matrix_matrix_dot(&inputs, &weights_1));
+    let hidden_layer = relu_matrix(matrix_matrix_dot(&inputs, &weights_1));
     let output = matrix_matrix_dot(&hidden_layer, &weights_2);
 }
 
@@ -151,7 +151,7 @@ fn backpropagation() {
         let mut total_error = 0.0;
 
         for i in 0..4 {
-            let hidden_layer = relu_vector(&vector_matrix_dot(&inputs[i], &weights_0_1));
+            let hidden_layer = relu_vector(vector_matrix_dot(&inputs[i], &weights_0_1));
             let prediction = vector_matrix_dot(&hidden_layer, &weights_1_2)[0];
 
             let error: f64 = (prediction - outputs[i][0]).powi(2);
@@ -160,7 +160,7 @@ fn backpropagation() {
             let delta_2_1 = prediction - outputs[i][0];
             let delta_1_0 = vector_vector_multiplication(
                 &weights_1_2.iter().map(|v| v[0] * delta_2_1).collect(),
-                &relu_vector_derivative(&hidden_layer),
+                &relu_vector_derivative(hidden_layer.clone()),
             );
 
             let weight_deltas_1_2: Matrix =

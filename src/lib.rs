@@ -10,7 +10,7 @@ pub fn vector_sum(vec: Vector) -> f64 {
 }
 
 pub fn dot(vec_a: &Vector, vec_b: &Vector) -> f64 {
-    elementwise_multiplication(vec_a, vec_b).iter().sum()
+    vec_a.iter().zip(vec_b.iter()).map(|(a, b)| a * b).sum()
 }
 
 pub fn elementwise_scalar_multiplication(vec: &Vector, n: f64) -> Vector {
@@ -72,20 +72,24 @@ pub fn matrix_matrix_dot(mat1: &Matrix, mat2: &Matrix) -> Matrix {
     ans
 }
 
-pub fn relu_vector(v: &Vector) -> Vector {
-    v.iter().map(|a| if a > &0.0 { *a } else { 0.0 }).collect()
 }
 
-pub fn relu_vector_derivative(v: &Vector) -> Vector {
-    v.iter().map(|a| if a > &0.0 { 1.0 } else { 0.0 }).collect()
+pub fn relu_vector(v: Vector) -> Vector {
+    v.into_iter()
+        .map(|a| if a > 0.0 { a } else { 0.0 })
+        .collect()
 }
 
-pub fn relu_matrix(m: &Matrix) -> Matrix {
-    m.iter().map(|v| relu_vector(v)).collect()
+pub fn relu_vector_derivative(v: Vector) -> Vector {
+    v.into_iter().map(|a| if a > 0.0 { 1.0 } else { 0.0 }).collect()
 }
 
-pub fn relu_matrix_derivative(m: &Matrix) -> Matrix {
-    m.iter().map(|v| relu_vector_derivative(v)).collect()
+pub fn relu_matrix(m: Matrix) -> Matrix {
+    m.into_iter().map(|v| relu_vector(v)).collect()
+}
+
+pub fn relu_matrix_derivative(m: Matrix) -> Matrix {
+    m.into_iter().map(|v| relu_vector_derivative(v)).collect()
 }
 
 pub fn transpose(m: &Matrix) -> Matrix {
