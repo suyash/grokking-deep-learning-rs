@@ -99,6 +99,7 @@ fn learning_the_whole_dataset() {
 
 /// Our first "Deep" Neural Network
 
+#[allow(unused_variables, unused_assignments, unused_mut)]
 fn first_deep_neural_network() {
     let inputs = vec![
         vec![1.0, 0.0, 1.0],

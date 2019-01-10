@@ -31,6 +31,7 @@ fn main() {
 
 /// Learning using hot and cold method
 
+#[allow(unused_assignments)]
 fn hot_and_cold_method() {
     let (mut weight, lr) = (0.1, 0.01);
     let (number_of_toes, win_or_lose_binary) = ([8.5], [1.0]);
@@ -108,6 +109,7 @@ fn hot_and_cold_learning_with_direction_and_amount() {
 
 /// One Iteration of Gradient Descent
 
+#[allow(unused_variables, unused_assignments)]
 fn gradient_descent_method() {
     let (mut weight, alpha) = (0.1, 0.01);
     let (number_of_toes, win_or_lose_binary) = ([8.5], [1.0]);
