@@ -1,3 +1,7 @@
+use datasets::Dataset;
+use rand::distributions::Distribution;
+use rand::{thread_rng, Rng};
+
 pub type Vector = Vec<f64>;
 pub type Matrix = Vec<Vec<f64>>;
 
@@ -122,6 +126,62 @@ pub fn transpose(m: &Matrix) -> Matrix {
     }
 
     ans
+}
+
+pub fn generate_random_vector(
+    size: usize,
+    scale_factor: f64,
+    add_factor: f64,
+    dist: &impl Distribution<f64>,
+) -> Vec<f64> {
+    let mut rng = thread_rng();
+    (0..size)
+        .map(|_| scale_factor * rng.sample(dist) + add_factor)
+        .collect()
+}
+
+pub fn process_mnist_batch_dataset(
+    dataset: impl Dataset<Item = (Vec<u8>, u8)>,
+    dataset_size: usize,
+    batch_size: usize,
+) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
+    let normalize_image = |img: Vec<u8>| img.iter().map(|v| (*v as f64) / 255.0).collect();
+    let encode_label = |l| {
+        let mut v = vec![0.0; 10];
+        v[l as usize] = 1.0;
+        v
+    };
+
+    let (images, labels): (Vec<_>, Vec<_>) = dataset
+        .take(dataset_size)
+        .map(|(i, l)| (normalize_image(i), encode_label(l)))
+        .unzip();
+
+    let images = images
+        .into_iter()
+        .batch(batch_size)
+        .map(|v| {
+            v.into_iter()
+                .fold(Vec::with_capacity(batch_size * 784), |mut acc, mut img| {
+                    acc.append(&mut img);
+                    acc
+                })
+        })
+        .collect();
+
+    let labels = labels
+        .into_iter()
+        .batch(batch_size)
+        .map(|v| {
+            v.into_iter()
+                .fold(Vec::with_capacity(batch_size * 10), |mut acc, mut l| {
+                    acc.append(&mut l);
+                    acc
+                })
+        })
+        .collect();
+
+    (images, labels)
 }
 
 #[cfg(test)]

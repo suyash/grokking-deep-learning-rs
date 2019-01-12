@@ -2,8 +2,9 @@ use std::error::Error;
 use std::ops::Mul;
 
 use datasets::image::mnist;
-use datasets::Dataset;
-use grokking_deep_learning_rs::*;
+use grokking_deep_learning_rs::{
+    argmax, generate_random_vector, process_mnist_batch_dataset, Vector,
+};
 use rand::distributions::{Bernoulli, Distribution, Standard};
 use rand::{thread_rng, Rng};
 use rulinalg::matrix::{BaseMatrix, Matrix, MatrixSlice};
@@ -48,8 +49,16 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
 
-    let mut weights_0_1 = Matrix::new(784, hidden_size, random_matrix(784, hidden_size, &Standard));
-    let mut weights_1_2 = Matrix::new(hidden_size, 10, random_matrix(hidden_size, 10, &Standard));
+    let mut weights_0_1 = Matrix::new(
+        784,
+        hidden_size,
+        generate_random_vector(784 * hidden_size, 0.2, -0.1, &Standard),
+    );
+    let mut weights_1_2 = Matrix::new(
+        hidden_size,
+        10,
+        generate_random_vector(hidden_size * 10, 0.2, -0.1, &Standard),
+    );
 
     // Training
 
@@ -222,8 +231,16 @@ fn three_layer_mnist_with_validation() -> Result<(), Box<dyn Error>> {
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
 
-    let mut weights_0_1 = Matrix::new(784, hidden_size, random_matrix(784, hidden_size, &Standard));
-    let mut weights_1_2 = Matrix::new(hidden_size, 10, random_matrix(hidden_size, 10, &Standard));
+    let mut weights_0_1 = Matrix::new(
+        784,
+        hidden_size,
+        generate_random_vector(784 * hidden_size, 0.2, -0.1, &Standard),
+    );
+    let mut weights_1_2 = Matrix::new(
+        hidden_size,
+        10,
+        generate_random_vector(hidden_size * 10, 0.2, -0.1, &Standard),
+    );
 
     // Training
 
@@ -385,8 +402,16 @@ fn three_layer_mnist_with_validation_and_dropout(
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
 
-    let mut weights_0_1 = Matrix::new(784, hidden_size, random_matrix(784, hidden_size, &Standard));
-    let mut weights_1_2 = Matrix::new(hidden_size, 10, random_matrix(hidden_size, 10, &Standard));
+    let mut weights_0_1 = Matrix::new(
+        784,
+        hidden_size,
+        generate_random_vector(784 * hidden_size, 0.2, -0.1, &Standard),
+    );
+    let mut weights_1_2 = Matrix::new(
+        hidden_size,
+        10,
+        generate_random_vector(hidden_size * 10, 0.2, -0.1, &Standard),
+    );
 
     let dist = Bernoulli::new(keep_probability);
 
@@ -530,16 +555,24 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
 
     let (train_data, test_data) = mnist()?;
 
-    let (images, labels) = process_batch_dataset(train_data, dataset_size, batch_size);
+    let (images, labels) = process_mnist_batch_dataset(train_data, dataset_size, batch_size);
     let (test_images, test_labels) =
-        process_batch_dataset(test_data, test_dataset_size, batch_size);
+        process_mnist_batch_dataset(test_data, test_dataset_size, batch_size);
 
     let (alpha, hidden_size) = (0.001, 40);
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
 
-    let mut weights_0_1 = Matrix::new(784, hidden_size, random_matrix(784, hidden_size, &Standard));
-    let mut weights_1_2 = Matrix::new(hidden_size, 10, random_matrix(hidden_size, 10, &Standard));
+    let mut weights_0_1 = Matrix::new(
+        784,
+        hidden_size,
+        generate_random_vector(784 * hidden_size, 0.2, -0.1, &Standard),
+    );
+    let mut weights_1_2 = Matrix::new(
+        hidden_size,
+        10,
+        generate_random_vector(hidden_size * 10, 0.2, -0.1, &Standard),
+    );
 
     let dist = Bernoulli::new(keep_probability);
 
@@ -550,7 +583,8 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
         let mut accuracy = 0.0;
 
         for (image, label) in images.iter().zip(labels.iter()) {
-            let image = unsafe { MatrixSlice::from_raw_parts(image.as_ptr(), batch_size, 784, 784) };
+            let image =
+                unsafe { MatrixSlice::from_raw_parts(image.as_ptr(), batch_size, 784, 784) };
             let label = unsafe { MatrixSlice::from_raw_parts(label.as_ptr(), batch_size, 10, 10) };
 
             let mut hidden_layer = (&image).mul(&weights_0_1);
@@ -601,7 +635,8 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
                 }
             }
 
-            let mut relu_deriv = Matrix::new(batch_size, hidden_size, vec![0.0; batch_size * hidden_size]);
+            let mut relu_deriv =
+                Matrix::new(batch_size, hidden_size, vec![0.0; batch_size * hidden_size]);
             for i in 0..batch_size {
                 for j in 0..hidden_size {
                     if hidden_layer[[i, j]] >= 0.0 {
@@ -692,54 +727,4 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
     }
 
     Ok(())
-}
-
-fn process_batch_dataset(
-    dataset: impl Dataset<Item = (Vec<u8>, u8)>,
-    dataset_size: usize,
-    batch_size: usize,
-) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
-    let normalize_image = |img: Vec<u8>| img.iter().map(|v| (*v as f64) / 255.0).collect();
-    let encode_label = |l| {
-        let mut v = vec![0.0; 10];
-        v[l as usize] = 1.0;
-        v
-    };
-
-    let (images, labels): (Vec<_>, Vec<_>) = dataset
-        .take(dataset_size)
-        .map(|(i, l)| (normalize_image(i), encode_label(l)))
-        .unzip();
-
-    let images = images
-        .into_iter()
-        .batch(batch_size)
-        .map(|v| {
-            v.into_iter()
-                .fold(Vec::with_capacity(batch_size * 784), |mut acc, mut img| {
-                    acc.append(&mut img);
-                    acc
-                })
-        })
-        .collect();
-
-    let labels = labels
-        .into_iter()
-        .batch(batch_size)
-        .map(|v| {
-            v.into_iter()
-                .fold(Vec::with_capacity(batch_size * 10), |mut acc, mut l| {
-                    acc.append(&mut l);
-                    acc
-                })
-        })
-        .collect();
-
-    (images, labels)
-}
-
-fn random_matrix(rows: usize, columns: usize, dist: &impl Distribution<f64>) -> Vector {
-    (0..(rows * columns))
-        .map(|_| 0.2 * thread_rng().sample(dist) - 0.1)
-        .collect()
 }
