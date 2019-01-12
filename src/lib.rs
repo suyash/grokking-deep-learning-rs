@@ -5,6 +5,20 @@ pub fn elementwise_multiplication(vec_a: &Vector, vec_b: &Vector) -> Vector {
     vec_a.iter().zip(vec_b.iter()).map(|(a, b)| a * b).collect()
 }
 
+pub fn argmax(vec: &[f64]) -> usize {
+    let mut max = vec[0];
+    let mut ans = 0;
+
+    for i in 1..vec.len() {
+        if vec[i] > max {
+            max = vec[i];
+            ans = i;
+        }
+    }
+
+    return ans;
+}
+
 pub fn vector_sum(vec: Vector) -> f64 {
     vec.iter().sum()
 }
@@ -32,6 +46,12 @@ pub fn vector_vector_subtraction(v1: &Vector, v2: &Vector) -> Vector {
 
 pub fn vector_vector_multiplication(v1: &Vector, v2: &Vector) -> Vector {
     v1.iter().zip(v2.iter()).map(|(a, b)| a * b).collect()
+}
+
+pub fn vector_vector_dot(vec1: &Vector, vec2: &Vector) -> Matrix {
+    vec1.iter()
+        .map(|i| vec2.iter().map(|j| i * j).collect())
+        .collect()
 }
 
 pub fn vector_matrix_dot(vec: &Vector, mat: &Matrix) -> Vector {
@@ -72,8 +92,6 @@ pub fn matrix_matrix_dot(mat1: &Matrix, mat2: &Matrix) -> Matrix {
     ans
 }
 
-}
-
 pub fn relu_vector(v: Vector) -> Vector {
     v.into_iter()
         .map(|a| if a > 0.0 { a } else { 0.0 })
@@ -81,7 +99,9 @@ pub fn relu_vector(v: Vector) -> Vector {
 }
 
 pub fn relu_vector_derivative(v: Vector) -> Vector {
-    v.into_iter().map(|a| if a > 0.0 { 1.0 } else { 0.0 }).collect()
+    v.into_iter()
+        .map(|a| if a > 0.0 { 1.0 } else { 0.0 })
+        .collect()
 }
 
 pub fn relu_matrix(m: Matrix) -> Matrix {
@@ -180,7 +200,7 @@ mod tests {
     fn test_relu_vector() {
         assert_eq!(
             vec![1.0, 0.0, 2.0, 0.0, 4.0],
-            relu_vector(&vec![1.0, -1.0, 2.0, -2.0, 4.0]),
+            relu_vector(vec![1.0, -1.0, 2.0, -2.0, 4.0]),
         );
     }
 }
