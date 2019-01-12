@@ -534,7 +534,7 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
     let (test_images, test_labels) =
         process_batch_dataset(test_data, test_dataset_size, batch_size);
 
-    let (alpha, hidden_size) = (0.001, 100);
+    let (alpha, hidden_size) = (0.001, 40);
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
 
@@ -550,8 +550,8 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
         let mut accuracy = 0.0;
 
         for (image, label) in images.iter().zip(labels.iter()) {
-            let image = unsafe { MatrixSlice::from_raw_parts(image.as_ptr(), batch_size, 784, 1) };
-            let label = unsafe { MatrixSlice::from_raw_parts(label.as_ptr(), batch_size, 10, 1) };
+            let image = unsafe { MatrixSlice::from_raw_parts(image.as_ptr(), batch_size, 784, 784) };
+            let label = unsafe { MatrixSlice::from_raw_parts(label.as_ptr(), batch_size, 10, 10) };
 
             let mut hidden_layer = (&image).mul(&weights_0_1);
             for i in 0..batch_size {
@@ -640,9 +640,9 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
 
             for (image, label) in test_images.iter().zip(test_labels.iter()) {
                 let image =
-                    unsafe { MatrixSlice::from_raw_parts(image.as_ptr(), batch_size, 784, 1) };
+                    unsafe { MatrixSlice::from_raw_parts(image.as_ptr(), batch_size, 784, 784) };
                 let label =
-                    unsafe { MatrixSlice::from_raw_parts(label.as_ptr(), batch_size, 10, 1) };
+                    unsafe { MatrixSlice::from_raw_parts(label.as_ptr(), batch_size, 10, 10) };
 
                 let mut hidden_layer = image.mul(&weights_0_1);
                 for i in 0..batch_size {
