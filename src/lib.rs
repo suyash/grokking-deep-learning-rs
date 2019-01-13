@@ -5,6 +5,7 @@ use rand::{thread_rng, Rng};
 pub type Vector = Vec<f64>;
 pub type Matrix = Vec<Vec<f64>>;
 
+#[allow(clippy::ptr_arg)]
 pub fn elementwise_multiplication(vec_a: &Vector, vec_b: &Vector) -> Vector {
     vec_a.iter().zip(vec_b.iter()).map(|(a, b)| a * b).collect()
 }
@@ -13,59 +14,69 @@ pub fn argmax(vec: &[f64]) -> usize {
     let mut max = vec[0];
     let mut ans = 0;
 
-    for i in 1..vec.len() {
-        if vec[i] > max {
-            max = vec[i];
+    for (i, x) in vec.iter().enumerate().skip(1) {
+        if x > &max {
+            max = *x;
             ans = i;
         }
     }
 
-    return ans;
+    ans
 }
 
 pub fn vector_sum(vec: Vector) -> f64 {
     vec.iter().sum()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn dot(vec_a: &Vector, vec_b: &Vector) -> f64 {
     vec_a.iter().zip(vec_b.iter()).map(|(a, b)| a * b).sum()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn elementwise_scalar_multiplication(vec: &Vector, n: f64) -> Vector {
     vec.iter().map(|x| x * n).collect()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn elementwise_addition(vec_a: &Vector, vec_b: &Vector) -> Vector {
     vec_a.iter().zip(vec_b.iter()).map(|(a, b)| a + b).collect()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn vector_average(vec: &Vector) -> f64 {
     let len = vec.len() as f64;
     vec.iter().sum::<f64>() / len
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn vector_vector_subtraction(v1: &Vector, v2: &Vector) -> Vector {
     v1.iter().zip(v2.iter()).map(|(a, b)| a - b).collect()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn vector_vector_multiplication(v1: &Vector, v2: &Vector) -> Vector {
     v1.iter().zip(v2.iter()).map(|(a, b)| a * b).collect()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn vector_vector_dot(vec1: &Vector, vec2: &Vector) -> Matrix {
     vec1.iter()
         .map(|i| vec2.iter().map(|j| i * j).collect())
         .collect()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn vector_matrix_dot(vec: &Vector, mat: &Matrix) -> Vector {
     matrix_vector_dot(&transpose(mat), vec)
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn matrix_vector_dot(mat: &Matrix, vec: &Vector) -> Vector {
     mat.iter().map(|w| dot(w, vec)).collect()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn matrix_matrix_subtraction(mat1: &Matrix, mat2: &Matrix) -> Matrix {
     mat1.iter()
         .zip(mat2.iter())
@@ -73,6 +84,7 @@ pub fn matrix_matrix_subtraction(mat1: &Matrix, mat2: &Matrix) -> Matrix {
         .collect()
 }
 
+#[allow(clippy::ptr_arg)]
 pub fn matrix_matrix_multiplication(mat1: &Matrix, mat2: &Matrix) -> Matrix {
     mat1.iter()
         .zip(mat2.iter())
@@ -80,6 +92,7 @@ pub fn matrix_matrix_multiplication(mat1: &Matrix, mat2: &Matrix) -> Matrix {
         .collect()
 }
 
+#[allow(clippy::ptr_arg, clippy::needless_range_loop)]
 pub fn matrix_matrix_dot(mat1: &Matrix, mat2: &Matrix) -> Matrix {
     assert_eq!(mat1[0].len(), mat2.len());
 
@@ -109,13 +122,14 @@ pub fn relu_vector_derivative(v: Vector) -> Vector {
 }
 
 pub fn relu_matrix(m: Matrix) -> Matrix {
-    m.into_iter().map(|v| relu_vector(v)).collect()
+    m.into_iter().map(relu_vector).collect()
 }
 
 pub fn relu_matrix_derivative(m: Matrix) -> Matrix {
-    m.into_iter().map(|v| relu_vector_derivative(v)).collect()
+    m.into_iter().map(relu_vector_derivative).collect()
 }
 
+#[allow(clippy::ptr_arg, clippy::needless_range_loop)]
 pub fn transpose(m: &Matrix) -> Matrix {
     let mut ans = vec![vec![0.0; m.len()]; m[0].len()];
 
@@ -145,7 +159,7 @@ pub fn process_mnist_batch_dataset(
     dataset_size: usize,
     batch_size: usize,
 ) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
-    let normalize_image = |img: Vec<u8>| img.iter().map(|v| (*v as f64) / 255.0).collect();
+    let normalize_image = |img: Vec<u8>| img.iter().map(|v| f64::from(*v) / 255.0).collect();
     let encode_label = |l| {
         let mut v = vec![0.0; 10];
         v[l as usize] = 1.0;
