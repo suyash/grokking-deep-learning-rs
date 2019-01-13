@@ -2,11 +2,13 @@ use std::error::Error;
 use std::ops::Mul;
 
 use datasets::image::mnist;
-use grokking_deep_learning_rs::{
-    argmax, generate_random_vector, process_mnist_batch_dataset, sample_bernoulli_trials, Vector,
-};
+use indicatif::{ProgressBar, ProgressStyle};
 use rand::distributions::Standard;
 use rulinalg::matrix::{BaseMatrix, Matrix, MatrixSlice};
+
+use grokking_deep_learning_rs::{
+    argmax, generate_random_vector, process_mnist_batch_dataset, sample_bernoulli_trials,
+};
 
 fn main() {
     println!("\n3 Layer Network on MNIST\n");
@@ -47,6 +49,11 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
     let (alpha, hidden_size) = (0.005, 40);
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
+    let progress = ProgressBar::new(iterations as u64);
+    progress.set_style(
+        ProgressStyle::default_bar()
+            .template("{msg} {bar:40.cyan/blue} {pos:>7}/{len:7} [{elapsed_precise}]"),
+    );
 
     let mut weights_0_1 = Matrix::new(
         784,
@@ -119,13 +126,24 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
             }
         }
 
-        println!(
-            "Iteration: {}, Train Accuracy: {}, Train Error: {}",
-            it + 1,
+        progress.inc(1);
+        progress.set_message(&format!(
+            "Train Accuracy: {}, Train Error: {}",
             accuracy / (dataset_size as f64),
             total_error / (dataset_size as f64)
-        );
+        ));
+
+        if (it + 1) % 10 == 0 {
+            progress.println(format!(
+                "Iteration: {}, Train Accuracy: {}, Train Error: {}",
+                it + 1,
+                accuracy / (dataset_size as f64),
+                total_error / (dataset_size as f64)
+            ));
+        }
     }
+
+    progress.finish_and_clear();
 
     // Inference
 
@@ -149,6 +167,8 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
 
     let mut total_error = 0.0;
     let mut accuracy = 0.0;
+
+    let progress = ProgressBar::new(test_dataset_size as u64);
 
     for (image, label) in images.into_iter().zip(labels.into_iter()) {
         let image = Matrix::new(1, 784, image);
@@ -177,10 +197,14 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
             .sum();
 
         total_error += error;
+
+        progress.inc(1);
     }
 
+    progress.finish_and_clear();
+
     println!(
-        "\nTest Accuracy: {}, Test Error: {}\n",
+        "Test Accuracy: {}, Test Error: {}",
         accuracy / (test_dataset_size as f64),
         total_error / (test_dataset_size as f64),
     );
@@ -229,6 +253,11 @@ fn three_layer_mnist_with_validation() -> Result<(), Box<dyn Error>> {
         .collect();
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
+    let progress = ProgressBar::new(iterations as u64);
+    progress.set_style(
+        ProgressStyle::default_bar()
+            .template("{msg} {bar:40.cyan/blue} {pos:>7}/{len:7} [{elapsed_precise}]"),
+    );
 
     let mut weights_0_1 = Matrix::new(
         784,
@@ -336,22 +365,22 @@ fn three_layer_mnist_with_validation() -> Result<(), Box<dyn Error>> {
                 total_test_error += error;
             }
 
-            println!(
-                "\nIteration: {}, Train Accuracy: {}, Train Error: {}, Test Accuracy: {}, Test Error: {}\n",
+            progress.println(format!(
+                "Iteration: {}, Train Accuracy: {}, Train Error: {}, Test Accuracy: {}, Test Error: {}",
                 it + 1,
                 accuracy / (dataset_size as f64),
                 total_error / (dataset_size as f64),
                 test_accuracy / (test_dataset_size as f64),
                 total_test_error / (test_dataset_size as f64),
-            );
-        } else {
-            println!(
-                "Iteration: {}, Train Accuracy: {}, Train Error: {}",
-                it + 1,
-                accuracy / (dataset_size as f64),
-                total_error / (dataset_size as f64)
-            );
+            ));
         }
+
+        progress.inc(1);
+        progress.set_message(&format!(
+            "Train Accuracy: {}, Train Error: {}",
+            accuracy / (dataset_size as f64),
+            total_error / (dataset_size as f64)
+        ));
     }
 
     Ok(())
@@ -400,6 +429,11 @@ fn three_layer_mnist_with_validation_and_dropout(
         .collect();
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
+    let progress = ProgressBar::new(iterations as u64);
+    progress.set_style(
+        ProgressStyle::default_bar()
+            .template("{msg} {bar:40.cyan/blue} {pos:>7}/{len:7} [{elapsed_precise}]"),
+    );
 
     let mut weights_0_1 = Matrix::new(
         784,
@@ -485,6 +519,13 @@ fn three_layer_mnist_with_validation_and_dropout(
             }
         }
 
+        progress.inc(1);
+        progress.set_message(&format!(
+            "Train Accuracy: {}, Train Error: {}",
+            accuracy / (dataset_size as f64),
+            total_error / (dataset_size as f64)
+        ));
+
         if (it + 1) % 10 == 0 {
             // Inference
 
@@ -520,23 +561,18 @@ fn three_layer_mnist_with_validation_and_dropout(
                 total_test_error += error;
             }
 
-            println!(
-                "\nIteration: {}, Train Accuracy: {}, Train Error: {}, Test Accuracy: {}, Test Error: {}\n",
+            progress.println(format!(
+                "Iteration: {}, Train Accuracy: {}, Train Error: {}, Test Accuracy: {}, Test Error: {}",
                 it + 1,
                 accuracy / (dataset_size as f64),
                 total_error / (dataset_size as f64),
                 test_accuracy / (test_dataset_size as f64),
                 total_test_error / (test_dataset_size as f64),
-            );
-        } else {
-            println!(
-                "Iteration: {}, Train Accuracy: {}, Train Error: {}",
-                it + 1,
-                accuracy / (dataset_size as f64),
-                total_error / (dataset_size as f64)
-            );
+            ));
         }
     }
+
+    progress.finish_and_clear();
 
     Ok(())
 }
@@ -556,6 +592,11 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
     let (alpha, hidden_size) = (0.001, 40);
 
     let iterations = 100; // NOTE: cannot run this for 350 iterations because of slower matrix multiplication.
+    let progress = ProgressBar::new(iterations as u64);
+    progress.set_style(
+        ProgressStyle::default_bar()
+            .template("{msg} {bar:40.cyan/blue} {pos:>7}/{len:7} [{elapsed_precise}]"),
+    );
 
     let mut weights_0_1 = Matrix::new(
         784,
@@ -656,6 +697,13 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
             }
         }
 
+        progress.inc(1);
+        progress.set_message(&format!(
+            "Train Accuracy: {}, Train Error: {}",
+            accuracy / (dataset_size as f64),
+            total_error / (dataset_size as f64)
+        ));
+
         if (it + 1) % 10 == 0 {
             // Inference
 
@@ -697,23 +745,18 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
                 }
             }
 
-            println!(
-                "\nIteration: {}, Train Accuracy: {}, Train Error: {}, Test Accuracy: {}, Test Error: {}\n",
+            progress.println(format!(
+                "Iteration: {}, Train Accuracy: {}, Train Error: {}, Test Accuracy: {}, Test Error: {}",
                 it + 1,
                 accuracy / (dataset_size as f64),
                 total_error / (dataset_size as f64),
                 test_accuracy / (test_dataset_size as f64),
                 total_test_error / (test_dataset_size as f64),
-            );
-        } else {
-            println!(
-                "Iteration: {}, Train Accuracy: {}, Train Error: {}",
-                it + 1,
-                accuracy / (dataset_size as f64),
-                total_error / (dataset_size as f64)
-            );
+            ));
         }
     }
+
+    progress.finish_and_clear();
 
     Ok(())
 }
