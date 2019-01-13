@@ -1,5 +1,5 @@
 use datasets::Dataset;
-use rand::distributions::Distribution;
+use rand::distributions::{Bernoulli, Distribution};
 use rand::{thread_rng, Rng};
 
 pub type Vector = Vec<f64>;
@@ -182,6 +182,15 @@ pub fn process_mnist_batch_dataset(
         .collect();
 
     (images, labels)
+}
+
+pub fn sample_bernoulli_trials(p: f64, length: usize) -> Vec<f64> {
+    let dist = Bernoulli::new(p);
+    thread_rng()
+        .sample_iter(&dist)
+        .take(length)
+        .map(|v| if v { 1.0 } else { 0.0 })
+        .collect()
 }
 
 #[cfg(test)]

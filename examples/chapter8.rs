@@ -3,10 +3,9 @@ use std::ops::Mul;
 
 use datasets::image::mnist;
 use grokking_deep_learning_rs::{
-    argmax, generate_random_vector, process_mnist_batch_dataset, Vector,
+    argmax, generate_random_vector, process_mnist_batch_dataset, sample_bernoulli_trials, Vector,
 };
-use rand::distributions::{Bernoulli, Distribution, Standard};
-use rand::{thread_rng, Rng};
+use rand::distributions::Standard;
 use rulinalg::matrix::{BaseMatrix, Matrix, MatrixSlice};
 
 fn main() {
@@ -413,8 +412,6 @@ fn three_layer_mnist_with_validation_and_dropout(
         generate_random_vector(hidden_size * 10, 0.2, -0.1, &Standard),
     );
 
-    let dist = Bernoulli::new(keep_probability);
-
     // Training
 
     for it in 0..iterations {
@@ -431,11 +428,8 @@ fn three_layer_mnist_with_validation_and_dropout(
                 }
             }
 
-            let dropout_mask_data: Vec<f64> = thread_rng()
-                .sample_iter(&dist)
-                .take(hidden_size)
-                .map(|v| if v { 1.0 } else { 0.0 })
-                .collect();
+            let dropout_mask_data: Vec<f64> =
+                sample_bernoulli_trials(keep_probability, hidden_size);
 
             let dropout_mask = Matrix::new(1, hidden_size, dropout_mask_data);
 
@@ -574,8 +568,6 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
         generate_random_vector(hidden_size * 10, 0.2, -0.1, &Standard),
     );
 
-    let dist = Bernoulli::new(keep_probability);
-
     // Training
 
     for it in 0..iterations {
@@ -596,11 +588,8 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
                 }
             }
 
-            let dropout_mask_data: Vec<f64> = thread_rng()
-                .sample_iter(&dist)
-                .take(batch_size * hidden_size)
-                .map(|v| if v { 1.0 } else { 0.0 })
-                .collect();
+            let dropout_mask_data: Vec<f64> =
+                sample_bernoulli_trials(keep_probability, batch_size * hidden_size);
 
             let dropout_mask = Matrix::new(batch_size, hidden_size, dropout_mask_data);
 
