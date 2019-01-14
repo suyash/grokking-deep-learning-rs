@@ -4,9 +4,12 @@ use std::ops::Mul;
 use datasets::image::mnist;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::distributions::Standard;
-use rulinalg::matrix::{BaseMatrix, BaseMatrixMut, Matrix, MatrixSlice};
+use rulinalg::matrix::{BaseMatrix, Matrix, MatrixSlice};
 
-use grokking_deep_learning_rs::*;
+use grokking_deep_learning_rs::{
+    argmax, generate_random_vector, process_mnist_batch_dataset, sample_bernoulli_trials,
+    softmax_mut, tanh_derivative, tanh_mut,
+};
 
 fn main() {
     println!("\nUpgrading our MNIST Network\n");
@@ -159,35 +162,4 @@ fn mnist_tanh(keep_probability: f64) -> Result<(), Box<dyn Error>> {
     progress.finish_and_clear();
 
     Ok(())
-}
-
-fn tanh_mut(m: &mut Matrix<f64>) {
-    for x in m.iter_mut() {
-        *x = (*x).tanh();
-    }
-}
-
-fn tanh_derivative(m: &Matrix<f64>) -> Matrix<f64> {
-    let mut ans = Matrix::zeros(m.rows(), m.cols());
-    for i in 0..m.rows() {
-        for j in 0..m.cols() {
-            ans[[i, j]] = 1.0 - (m[[i, j]] * m[[i, j]]);
-        }
-    }
-    ans
-}
-
-fn softmax_mut(m: &mut Matrix<f64>) {
-    for i in 0..m.rows() {
-        let mut s = 0.0;
-
-        for j in 0..m.cols() {
-            m[[i, j]] = m[[i, j]].exp();
-            s += m[[i, j]];
-        }
-
-        for j in 0..m.cols() {
-            m[[i, j]] /= s;
-        }
-    }
 }

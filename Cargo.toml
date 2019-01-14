@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 datasets = { path = "../datasets" }
 rand = "0.6.4"
+rulinalg = "0.4.2"
 
 [dev-dependencies]
-rulinalg = "0.4.2"
 indicatif = "0.11.0"

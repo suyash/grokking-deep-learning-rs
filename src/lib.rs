@@ -1,6 +1,7 @@
 use datasets::Dataset;
 use rand::distributions::{Bernoulli, Distribution};
 use rand::{thread_rng, Rng};
+use rulinalg::matrix::{BaseMatrix, BaseMatrixMut, Matrix as RulinalgMatrix};
 
 pub type Vector = Vec<f64>;
 pub type Matrix = Vec<Vec<f64>>;
@@ -205,6 +206,37 @@ pub fn sample_bernoulli_trials(p: f64, length: usize) -> Vec<f64> {
         .take(length)
         .map(|v| if v { 1.0 } else { 0.0 })
         .collect()
+}
+
+pub fn tanh_mut(m: &mut RulinalgMatrix<f64>) {
+    for x in m.iter_mut() {
+        *x = (*x).tanh();
+    }
+}
+
+pub fn tanh_derivative(m: &RulinalgMatrix<f64>) -> RulinalgMatrix<f64> {
+    let mut ans = RulinalgMatrix::zeros(m.rows(), m.cols());
+    for i in 0..m.rows() {
+        for j in 0..m.cols() {
+            ans[[i, j]] = 1.0 - (m[[i, j]] * m[[i, j]]);
+        }
+    }
+    ans
+}
+
+pub fn softmax_mut(m: &mut RulinalgMatrix<f64>) {
+    for i in 0..m.rows() {
+        let mut s = 0.0;
+
+        for j in 0..m.cols() {
+            m[[i, j]] = m[[i, j]].exp();
+            s += m[[i, j]];
+        }
+
+        for j in 0..m.cols() {
+            m[[i, j]] /= s;
+        }
+    }
 }
 
 #[cfg(test)]
