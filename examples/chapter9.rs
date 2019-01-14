@@ -100,7 +100,7 @@ fn mnist_tanh(keep_probability: f64) -> Result<(), Box<dyn Error>> {
 
             for i in 0..batch_size {
                 for j in 0..hidden_size {
-                    delta_1_0[[i, j]] *= dropout_mask[[i, j]] * 1.0 / keep_probability;
+                    delta_1_0[[i, j]] *= dropout_mask[[i, j]];
                 }
             }
 
