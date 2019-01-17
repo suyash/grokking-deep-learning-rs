@@ -10,7 +10,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use rand::distributions::Standard;
 use rulinalg::matrix::{BaseMatrix, Matrix};
 
-use grokking_deep_learning_rs::*;
+use grokking_deep_learning_rs::{generate_random_vector, sigmoid_mut};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let (train_dataset, test_dataset) = imdb_reviews()?;
