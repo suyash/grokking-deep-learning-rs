@@ -208,6 +208,18 @@ pub fn sample_bernoulli_trials(p: f64, length: usize) -> Vec<f64> {
         .collect()
 }
 
+pub fn relu_mut(m: &mut RulinalgMatrix<f64>) {
+    for x in m.iter_mut() {
+        *x = if (*x) > 0.0 { *x } else { 0.0 };
+    }
+}
+
+pub fn sigmoid_mut(m: &mut RulinalgMatrix<f64>) {
+    for x in m.iter_mut() {
+        *x = 1.0 / (1.0 + (-(*x)).exp());
+    }
+}
+
 pub fn tanh_mut(m: &mut RulinalgMatrix<f64>) {
     for x in m.iter_mut() {
         *x = (*x).tanh();
