@@ -35,7 +35,7 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
 
     let images: Vec<Vec<f64>> = images
         .iter()
-        .map(|img| img.iter().map(|v| (*v as f64) / 255.0).collect())
+        .map(|img| img.iter().map(|v| f64::from(*v) / 255.0).collect())
         .collect();
 
     let labels: Vec<Vec<f64>> = labels
@@ -118,11 +118,11 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
             // avoid another clone of image
             let weight_delta_0_1 = image.transpose().mul(delta_1_0);
 
-            for (i, x) in weights_0_1.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_0_1.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_0_1.data()[i];
             }
 
-            for (i, x) in weights_1_2.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_1_2.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_1_2.data()[i];
             }
         }
@@ -154,7 +154,7 @@ fn three_layer_mnist() -> Result<(), Box<dyn Error>> {
 
     let images: Vec<Vec<f64>> = images
         .into_iter()
-        .map(|img| img.into_iter().map(|v| (v as f64) / 255.0).collect())
+        .map(|img| img.into_iter().map(|v| f64::from(v) / 255.0).collect())
         .collect();
 
     let labels: Vec<Vec<f64>> = labels
@@ -223,7 +223,7 @@ fn three_layer_mnist_with_validation() -> Result<(), Box<dyn Error>> {
 
     let images: Vec<Vec<f64>> = images
         .iter()
-        .map(|img| img.iter().map(|v| (*v as f64) / 255.0).collect())
+        .map(|img| img.iter().map(|v| f64::from(*v) / 255.0).collect())
         .collect();
 
     let labels: Vec<Vec<f64>> = labels
@@ -241,7 +241,7 @@ fn three_layer_mnist_with_validation() -> Result<(), Box<dyn Error>> {
 
     let test_images: Vec<Vec<f64>> = test_images
         .into_iter()
-        .map(|img| img.into_iter().map(|v| (v as f64) / 255.0).collect())
+        .map(|img| img.into_iter().map(|v| f64::from(v) / 255.0).collect())
         .collect();
 
     let test_labels: Vec<Vec<f64>> = test_labels
@@ -322,11 +322,11 @@ fn three_layer_mnist_with_validation() -> Result<(), Box<dyn Error>> {
             // avoid another clone of image
             let weight_delta_0_1 = image.transpose().mul(delta_1_0);
 
-            for (i, x) in weights_0_1.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_0_1.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_0_1.data()[i];
             }
 
-            for (i, x) in weights_1_2.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_1_2.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_1_2.data()[i];
             }
         }
@@ -399,7 +399,7 @@ fn three_layer_mnist_with_validation_and_dropout(
 
     let images: Vec<Vec<f64>> = images
         .iter()
-        .map(|img| img.iter().map(|v| (*v as f64) / 255.0).collect())
+        .map(|img| img.iter().map(|v| f64::from(*v) / 255.0).collect())
         .collect();
 
     let labels: Vec<Vec<f64>> = labels
@@ -417,7 +417,7 @@ fn three_layer_mnist_with_validation_and_dropout(
 
     let test_images: Vec<Vec<f64>> = test_images
         .into_iter()
-        .map(|img| img.into_iter().map(|v| (v as f64) / 255.0).collect())
+        .map(|img| img.into_iter().map(|v| f64::from(v) / 255.0).collect())
         .collect();
 
     let test_labels: Vec<Vec<f64>> = test_labels
@@ -511,11 +511,11 @@ fn three_layer_mnist_with_validation_and_dropout(
             // avoid another clone of image
             let weight_delta_0_1 = image.transpose().mul(delta_1_0);
 
-            for (i, x) in weights_0_1.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_0_1.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_0_1.data()[i];
             }
 
-            for (i, x) in weights_1_2.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_1_2.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_1_2.data()[i];
             }
         }
@@ -660,7 +660,7 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
                 }
             }
 
-            let mut relu_deriv = relu_derivative(&hidden_layer);
+            let relu_deriv = relu_derivative(&hidden_layer);
 
             let mut delta_1_0 = (&delta_2_1)
                 .mul(weights_1_2.transpose())
