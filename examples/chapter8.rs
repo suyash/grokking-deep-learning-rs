@@ -7,18 +7,19 @@ use rand::distributions::Standard;
 use rulinalg::matrix::{BaseMatrix, Matrix, MatrixSlice};
 
 use grokking_deep_learning_rs::{
-    argmax, generate_random_vector, process_mnist_batch_dataset, sample_bernoulli_trials,
+    argmax, generate_random_vector, process_mnist_batch_dataset, relu_derivative, relu_mut,
+    sample_bernoulli_trials,
 };
 
 fn main() {
-    println!("\n3 Layer Network on MNIST\n");
-    three_layer_mnist().unwrap();
+    // println!("\n3 Layer Network on MNIST\n");
+    // three_layer_mnist().unwrap();
 
-    println!("\n3 Layer Network on MNIST with validation every 10 iterations\n");
-    three_layer_mnist_with_validation().unwrap();
+    // println!("\n3 Layer Network on MNIST with validation every 10 iterations\n");
+    // three_layer_mnist_with_validation().unwrap();
 
-    println!("\nDropout\n");
-    three_layer_mnist_with_validation_and_dropout(0.3).unwrap();
+    // println!("\nDropout\n");
+    // three_layer_mnist_with_validation_and_dropout(0.3).unwrap();
 
     println!("\nBatched Gradient Descent with Dropout\n");
     batched_gradient_descent_with_dropout(0.5).unwrap();
@@ -621,13 +622,7 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
             let label = unsafe { MatrixSlice::from_raw_parts(label.as_ptr(), batch_size, 10, 10) };
 
             let mut hidden_layer = (&image).mul(&weights_0_1);
-            for i in 0..batch_size {
-                for j in 0..hidden_size {
-                    if hidden_layer[[i, j]] < 0.0 {
-                        hidden_layer[[i, j]] = 0.0;
-                    }
-                }
-            }
+            relu_mut(&mut hidden_layer);
 
             let dropout_mask_data: Vec<f64> =
                 sample_bernoulli_trials(keep_probability, batch_size * hidden_size);
@@ -665,15 +660,7 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
                 }
             }
 
-            let mut relu_deriv =
-                Matrix::new(batch_size, hidden_size, vec![0.0; batch_size * hidden_size]);
-            for i in 0..batch_size {
-                for j in 0..hidden_size {
-                    if hidden_layer[[i, j]] >= 0.0 {
-                        relu_deriv[[i, j]] = 1.0;
-                    }
-                }
-            }
+            let mut relu_deriv = relu_derivative(&hidden_layer);
 
             let mut delta_1_0 = (&delta_2_1)
                 .mul(weights_1_2.transpose())
@@ -688,11 +675,11 @@ fn batched_gradient_descent_with_dropout(keep_probability: f64) -> Result<(), Bo
             let weight_delta_1_2 = hidden_layer.transpose().mul(delta_2_1);
             let weight_delta_0_1 = image.transpose().mul(delta_1_0);
 
-            for (i, x) in weights_0_1.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_0_1.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_0_1.data()[i];
             }
 
-            for (i, x) in weights_1_2.mut_data().into_iter().enumerate() {
+            for (i, x) in weights_1_2.mut_data().iter_mut().enumerate() {
                 *x -= alpha * weight_delta_1_2.data()[i];
             }
         }

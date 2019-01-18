@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // can't immutably borrow here
     let words = train_reviews
         .iter()
-        .flat_map(|s: &String| s.split_whitespace().filter(|w| w.len() > 0));
+        .flat_map(|s: &String| s.split_whitespace().filter(|w| !w.is_empty()));
 
     let words = BTreeSet::from_iter(words);
 
@@ -77,7 +77,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn encode_sentences(v: &[String], word_index: &BTreeMap<&str, usize>) -> Vec<Vec<usize>> {
-    v.into_iter()
+    v.iter()
         .map(|s| {
             let mut encoding = Vec::new();;
 
@@ -101,6 +101,7 @@ fn encode_labels(labels: Vec<u8>) -> Vec<f64> {
         .collect()
 }
 
+#[allow(clippy::float_cmp)]
 fn net_with_embedding_layer(
     (train_reviews, train_labels): (&[Vec<usize>], &[f64]),
     (test_reviews, test_labels): (&[Vec<usize>], &[f64]),
@@ -241,7 +242,7 @@ fn get_similar_embeddings<'a>(
 ) -> Vec<(&'a str, f64)> {
     let mut sims = Vec::with_capacity(word_index.len());
 
-    for (word, ix) in word_index.into_iter() {
+    for (word, ix) in word_index.iter() {
         let mut distance = 0.0;
 
         for (a, b) in row.iter().zip(embeddings.row(*ix).iter()) {

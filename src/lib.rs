@@ -214,6 +214,19 @@ pub fn relu_mut(m: &mut RulinalgMatrix<f64>) {
     }
 }
 
+pub fn relu_derivative(m: &RulinalgMatrix<f64>) -> RulinalgMatrix<f64> {
+    let mut ans = RulinalgMatrix::zeros(m.rows(), m.cols());
+    for i in 0..m.rows() {
+        for j in 0..m.cols() {
+            if m[[i, j]] >= 0.0 {
+                ans[[i, j]] = 1.0;
+            }
+        }
+    }
+
+    ans
+}
+
 pub fn sigmoid_mut(m: &mut RulinalgMatrix<f64>) {
     for x in m.iter_mut() {
         *x = 1.0 / (1.0 + (-(*x)).exp());

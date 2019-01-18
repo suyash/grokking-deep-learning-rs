@@ -86,8 +86,8 @@ fn mnist_tanh(keep_probability: f64) -> Result<(), Box<dyn Error>> {
 
             let expanded_input: Vec<f64> = images
                 .iter()
-                .flat_map(|kernel_inputs| kernel_inputs.into_iter())
-                .flat_map(|kernel_inputs| kernel_inputs.into_iter().cloned())
+                .flat_map(|kernel_inputs| kernel_inputs.iter())
+                .flat_map(|kernel_inputs| kernel_inputs.iter().cloned())
                 .collect();
 
             // [batch_size * 625, 9]
@@ -199,8 +199,8 @@ fn mnist_tanh(keep_probability: f64) -> Result<(), Box<dyn Error>> {
 
                 let expanded_input: Vec<f64> = images
                     .iter()
-                    .flat_map(|kernel_inputs| kernel_inputs.into_iter())
-                    .flat_map(|kernel_inputs| kernel_inputs.into_iter().cloned())
+                    .flat_map(|kernel_inputs| kernel_inputs.iter())
+                    .flat_map(|kernel_inputs| kernel_inputs.iter().cloned())
                     .collect();
 
                 // [batch_size * 625, 9]
@@ -276,6 +276,7 @@ fn mnist_tanh(keep_probability: f64) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(clippy::type_complexity)]
 fn process_mnist_filtered_dataset(
     dataset: impl Dataset<Item = (Vec<u8>, u8)>,
     dataset_size: usize,
@@ -300,7 +301,8 @@ fn process_mnist_filtered_dataset(
 
                     for k in 0..kernel_rows {
                         for l in 0..kernel_cols {
-                            kernel_input[k * kernel_cols + l] = img[(i + k) * 28 + (j + l)] as f64;
+                            kernel_input[k * kernel_cols + l] =
+                                f64::from(img[(i + k) * 28 + (j + l)]);
                         }
                     }
 

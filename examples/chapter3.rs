@@ -29,6 +29,7 @@ fn what_is_a_neural_network() {
     println!("prediction: {}", prediction);
 }
 
+#[allow(clippy::let_and_return)]
 fn neural_network_1(input: f64, weight: f64) -> f64 {
     let prediction = input * weight;
     prediction
