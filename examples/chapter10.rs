@@ -310,7 +310,7 @@ fn process_mnist_filtered_dataset(
 
             kernel_inputs
         })
-        .batch(batch_size)
+        .batch(batch_size, false)
         .collect();
 
     // [_, batch, label]
@@ -321,7 +321,7 @@ fn process_mnist_filtered_dataset(
             v[l as usize] = 1.0;
             v
         })
-        .batch(batch_size)
+        .batch(batch_size, false)
         // flatten each batch so it can be converted to MatrixSlice easily
         .map(|b| b.into_iter().flat_map(|v| v.into_iter()).collect())
         .collect();

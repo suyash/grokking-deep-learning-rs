@@ -174,7 +174,7 @@ pub fn process_mnist_batch_dataset(
 
     let images = images
         .into_iter()
-        .batch(batch_size)
+        .batch(batch_size, false)
         .map(|v| {
             v.into_iter()
                 .fold(Vec::with_capacity(batch_size * 784), |mut acc, mut img| {
@@ -186,7 +186,7 @@ pub fn process_mnist_batch_dataset(
 
     let labels = labels
         .into_iter()
-        .batch(batch_size)
+        .batch(batch_size, false)
         .map(|v| {
             v.into_iter()
                 .fold(Vec::with_capacity(batch_size * 10), |mut acc, mut l| {
