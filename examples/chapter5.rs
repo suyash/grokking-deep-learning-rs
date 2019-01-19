@@ -1,3 +1,7 @@
+//! Chapter5 - Generalizing Gradient Descent - Learning Multiple Weights at a Time.ipynb
+//!
+//! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter5%20-%20Generalizing%20Gradient%20Descent%20-%20Learning%20Multiple%20Weights%20at%20a%20Time.ipynb
+
 use grokking_deep_learning_rs::{
     dot, elementwise_scalar_multiplication, matrix_vector_dot, Matrix, Vector,
 };
@@ -47,6 +51,7 @@ fn gradient_descent_with_multiple_inputs() {
     println!("Weights: {:?}, Weight Deltas: {:?}", weights, weight_delta);
 }
 
+#[allow(clippy::ptr_arg)]
 fn neural_network_1(input: &Vector, weights: &Vector) -> f64 {
     dot(input, weights)
 }
@@ -160,6 +165,7 @@ fn gradient_descent_with_multiple_outputs() {
     println!("Weights: {:?}, Weight Deltas: {:?}", weights, weight_deltas);
 }
 
+#[allow(clippy::ptr_arg)]
 fn neural_network_2(input: f64, weights: &Vector) -> Vector {
     elementwise_scalar_multiplication(weights, input)
 }
@@ -210,6 +216,7 @@ fn gradient_descent_with_multiple_inputs_and_outputs() {
     println!("Weights: {:?}, Weight Deltas: {:?}", weights, weight_deltas);
 }
 
+#[allow(clippy::ptr_arg)]
 fn neural_network_3(inputs: &Vector, weights: &Matrix) -> Vector {
     matrix_vector_dot(weights, inputs)
 }

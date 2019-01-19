@@ -1,3 +1,7 @@
+//! Chapter6 - Intro to Backpropagation - Building Your First DEEP Neural Network.ipynb
+//!
+//! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter6%20-%20Intro%20to%20Backpropagation%20-%20Building%20Your%20First%20DEEP%20Neural%20Network.ipynb
+
 use rand::distributions::{Distribution, Standard};
 use rand::{thread_rng, Rng};
 
@@ -48,7 +52,7 @@ fn creating_a_matrix_or_two() {
 
         let delta = prediction - goal_prediction;
         for i in 0..3 {
-            weights[i] = weights[i] - alpha * (input[i] * delta);
+            weights[i] -= alpha * (input[i] * delta);
         }
     }
 }
@@ -87,7 +91,7 @@ fn learning_the_whole_dataset() {
 
             let delta = prediction - goal_prediction;
             for i in 0..3 {
-                weights[i] = weights[i] - alpha * (input[i] * delta);
+                weights[i] -= alpha * (input[i] * delta);
             }
         }
 
@@ -135,16 +139,16 @@ fn backpropagation() {
 
     // Weight values taken from the python notebooks for reproducing results.
     let mut weights_0_1: Matrix = vec![
-        vec![-0.16595599, 0.44064899, -0.99977125, -0.39533485],
-        vec![-0.70648822, -0.81532281, -0.62747958, -0.30887855],
-        vec![-0.20646505, 0.07763347, -0.16161097, 0.370439],
+        vec![-0.165_955_99, 0.440_648_99, -0.999_771_25, -0.395_334_85],
+        vec![-0.706_488_22, -0.815_322_81, -0.627_479_58, -0.308_878_55],
+        vec![-0.206_465_05, 0.077_633_47, -0.161_610_97, 0.370_439],
     ];
 
     let mut weights_1_2: Matrix = vec![
-        vec![-0.5910955],
-        vec![0.75623487],
-        vec![-0.94522481],
-        vec![0.34093502],
+        vec![-0.591_095_5],
+        vec![0.756_234_87],
+        vec![-0.945_224_81],
+        vec![0.340_935_02],
     ];
 
     for it in 0..60 {

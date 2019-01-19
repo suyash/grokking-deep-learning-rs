@@ -1,3 +1,7 @@
+//! Chapter11 - Intro to Word Embeddings - Neural Networks that Understand Language.ipynb
+//!
+//! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter11%20-%20Intro%20to%20Word%20Embeddings%20-%20Neural%20Networks%20that%20Understand%20Language.ipynb
+
 use std::cmp::{max, min, Ordering};
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;

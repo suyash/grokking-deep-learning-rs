@@ -1,4 +1,4 @@
-//! Grokking Deep Learning - Chapter 3
+//! Chapter3 -  Forward Propagation - Intro to Neural Prediction
 //!
 //! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter3%20-%20%20Forward%20Propagation%20-%20Intro%20to%20Neural%20Prediction.ipynb
 

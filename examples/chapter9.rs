@@ -1,3 +1,7 @@
+//! Chapter9 - Intro to Activation Functions - Modeling Probabilities.ipynb
+//!
+//! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter9%20-%20Intro%20to%20Activation%20Functions%20-%20Modeling%20Probabilities.ipynb
+
 use std::error::Error;
 use std::ops::Mul;
 

@@ -1,3 +1,7 @@
+//! Chapter8 - Intro to Regularization - Learning Signal and Ignoring Noise.ipynb
+//!
+//! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter8%20-%20Intro%20to%20Regularization%20-%20Learning%20Signal%20and%20Ignoring%20Noise.ipynb
+
 use std::error::Error;
 use std::ops::Mul;
 

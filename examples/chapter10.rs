@@ -1,3 +1,7 @@
+//! Chapter10 - Intro to Convolutional Neural Networks - Learning Edges and Corners.ipynb
+//!
+//! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter10%20-%20Intro%20to%20Convolutional%20Neural%20Networks%20-%20Learning%20Edges%20and%20Corners.ipynb
+
 use std::error::Error;
 use std::ops::Mul;
 

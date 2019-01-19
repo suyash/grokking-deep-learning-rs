@@ -1,3 +1,7 @@
+//! Chapter4 - Gradient Descent - Intro to Neural Learning
+//!
+//! https://github.com/iamtrask/Grokking-Deep-Learning/blob/master/Chapter4%20-%20Gradient%20Descent%20-%20Intro%20to%20Neural%20Learning.ipynb
+
 fn main() {
     println!("\nLearning using hot and cold method\n");
     hot_and_cold_method();
