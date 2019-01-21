@@ -21,7 +21,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use rand::distributions::Uniform;
 use rulinalg::matrix::{BaseMatrix, Matrix};
 
-use grokking_deep_learning_rs::{generate_random_vector, softmax_mut, argmax};
+use grokking_deep_learning_rs::{argmax, generate_random_vector, softmax_mut};
 
 fn main() -> Result<(), Box<dyn Error>> {
     embeddings_forward_propagation();
@@ -46,7 +46,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let word_count = words.len();
     let word_index = BTreeMap::from_iter(words.into_iter().zip(0..word_count));
-    let inverted_word_index = BTreeMap::from_iter(word_index.clone().into_iter().map(|(k, v)| (v, k)));
+    let inverted_word_index =
+        BTreeMap::from_iter(word_index.clone().into_iter().map(|(k, v)| (v, k)));
 
     let (start_state, embeddings, recurrent_weights, state_to_prediction_weights) =
         training_with_arbitrary_length(&train_data, &word_index)?;
@@ -62,8 +63,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         let pred_ix = argmax(prediction.row(0).raw_slice());
         let predicted_word = inverted_word_index[&pred_ix];
 
-        println!("Input: {}, Expected: {}, Predicted: {}", word, sentence[i + 1], predicted_word);
-        current_state = current_state.mul(&recurrent_weights) + embeddings.row(word_index[word]).into_matrix();
+        println!(
+            "Input: {}, Expected: {}, Predicted: {}",
+            word,
+            sentence[i + 1],
+            predicted_word
+        );
+        current_state =
+            current_state.mul(&recurrent_weights) + embeddings.row(word_index[word]).into_matrix();
     }
 
     Ok(())
