@@ -12,6 +12,8 @@ Currently this uses [rulinalg](https://docs.rs/rulinalg) for matrix operations, 
 
 As a result of slower matmul, chapter 8 onwards, certain examples are smaller in size compared to the python examples.
 
+In Chapter 13, for the recurrent neural network exercise, the training gradients are exploding. Again, like chapter 12 the dataset is extremely small compared to the one used in the Python version, but the gradients explode and go to NaN very quickly.
+
 # License
 
 This project is licensed under either of
