@@ -409,7 +409,11 @@ impl Tensor {
             ans
         };
 
-        Tensor::new(result, Operation::Sigmoid, Some(vec![Rc::clone(&self.0)]))
+        if self.0.borrow().autograd {
+            Tensor::new(result, Operation::Sigmoid, Some(vec![Rc::clone(&self.0)]))
+        } else {
+            Tensor::grad(result)
+        }
     }
 
     pub fn tanh(&self) -> Tensor {
@@ -426,7 +430,11 @@ impl Tensor {
             ans
         };
 
-        Tensor::new(result, Operation::Tanh, Some(vec![Rc::clone(&self.0)]))
+        if self.0.borrow().autograd {
+            Tensor::new(result, Operation::Tanh, Some(vec![Rc::clone(&self.0)]))
+        } else {
+            Tensor::grad(result)
+        }
     }
 
     pub fn relu(&self) -> Tensor {
@@ -447,7 +455,11 @@ impl Tensor {
             ans
         };
 
-        Tensor::new(result, Operation::Relu, Some(vec![Rc::clone(&self.0)]))
+        if self.0.borrow().autograd {
+            Tensor::new(result, Operation::Relu, Some(vec![Rc::clone(&self.0)]))
+        } else {
+            Tensor::grad(result)
+        }
     }
 
     pub fn index_select(&self, indices: Vec<usize>) -> Tensor {
@@ -464,11 +476,15 @@ impl Tensor {
             ans
         };
 
-        Tensor::new(
-            result,
-            Operation::IndexSelect(indices),
-            Some(vec![Rc::clone(&self.0)]),
-        )
+        if self.0.borrow().autograd {
+            Tensor::new(
+                result,
+                Operation::IndexSelect(indices),
+                Some(vec![Rc::clone(&self.0)]),
+            )
+        } else {
+            Tensor::grad(result)
+        }
     }
 
     /// the current tensor and the targets have to be the same shape
@@ -510,11 +526,15 @@ impl Tensor {
             (m, target_dist, loss)
         };
 
-        Tensor::new(
-            Matrix::new(1, 1, vec![loss]),
-            Operation::CrossEntropy(m, target_dist),
-            Some(vec![Rc::clone(&self.0)]),
-        )
+        if self.0.borrow().autograd {
+            Tensor::new(
+                Matrix::new(1, 1, vec![loss]),
+                Operation::CrossEntropy(m, target_dist),
+                Some(vec![Rc::clone(&self.0)]),
+            )
+        } else {
+            Tensor::grad(Matrix::new(1, 1, vec![loss]))
+        }
     }
 }
 
@@ -524,11 +544,15 @@ impl Add for &Tensor {
     fn add(self, other: Self) -> Self::Output {
         let data = &self.0.borrow().data + &other.0.borrow().data;
 
-        Tensor::new(
-            data,
-            Operation::Add,
-            Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
-        )
+        if self.0.borrow().autograd {
+            Tensor::new(
+                data,
+                Operation::Add,
+                Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
+            )
+        } else {
+            Tensor::grad(data)
+        }
     }
 }
 
@@ -537,7 +561,11 @@ impl Neg for &Tensor {
 
     fn neg(self) -> Self::Output {
         let data = -&self.0.borrow().data;
-        Tensor::new(data, Operation::Neg, Some(vec![Rc::clone(&self.0)]))
+        if self.0.borrow().autograd {
+            Tensor::new(data, Operation::Neg, Some(vec![Rc::clone(&self.0)]))
+        } else {
+            Tensor::grad(data)
+        }
     }
 }
 
@@ -547,11 +575,15 @@ impl Sub for &Tensor {
     fn sub(self, other: Self) -> Self::Output {
         let data = &self.0.borrow().data - &other.0.borrow().data;
 
-        Tensor::new(
-            data,
-            Operation::Sub,
-            Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
-        )
+        if self.0.borrow().autograd {
+            Tensor::new(
+                data,
+                Operation::Sub,
+                Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
+            )
+        } else {
+            Tensor::grad(data)
+        }
     }
 }
 
@@ -561,11 +593,15 @@ impl Mul for &Tensor {
     fn mul(self, other: Self) -> Self::Output {
         let data = self.0.borrow().data.elemul(&other.0.borrow().data);
 
-        Tensor::new(
-            data,
-            Operation::Mul,
-            Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
-        )
+        if self.0.borrow().autograd {
+            Tensor::new(
+                data,
+                Operation::Mul,
+                Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
+            )
+        } else {
+            Tensor::grad(data)
+        }
     }
 }
 
@@ -602,7 +638,11 @@ impl Sum for &Tensor {
             summed_data
         };
 
-        Tensor::new(ans, Operation::Sum(axis), Some(vec![Rc::clone(&self.0)]))
+        if self.0.borrow().autograd {
+            Tensor::new(ans, Operation::Sum(axis), Some(vec![Rc::clone(&self.0)]))
+        } else {
+            Tensor::grad(ans)
+        }
     }
 }
 
@@ -632,11 +672,15 @@ impl Expand for &Tensor {
                 new_data
             };
 
-            Tensor::new(
-                new_data,
-                Operation::Expand(dim),
-                Some(vec![Rc::clone(&self.0)]),
-            )
+            if self.0.borrow().autograd {
+                Tensor::new(
+                    new_data,
+                    Operation::Expand(dim),
+                    Some(vec![Rc::clone(&self.0)]),
+                )
+            } else {
+                Tensor::grad(new_data)
+            }
         } else {
             unimplemented!()
         }
@@ -656,7 +700,12 @@ impl Transpose for &Tensor {
             let data = &self.0.borrow().data;
             data.transpose()
         };
-        Tensor::new(res, Operation::Transpose, Some(vec![Rc::clone(&self.0)]))
+
+        if self.0.borrow().autograd {
+            Tensor::new(res, Operation::Transpose, Some(vec![Rc::clone(&self.0)]))
+        } else {
+            Tensor::grad(res)
+        }
     }
 }
 
@@ -675,10 +724,14 @@ impl Dot for &Tensor {
             data.mul(other_data)
         };
 
-        Tensor::new(
-            result,
-            Operation::Dot,
-            Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
-        )
+        if self.0.borrow().autograd {
+            Tensor::new(
+                result,
+                Operation::Dot,
+                Some(vec![Rc::clone(&self.0), Rc::clone(&other.0)]),
+            )
+        } else {
+            Tensor::grad(result)
+        }
     }
 }
