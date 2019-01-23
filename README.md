@@ -2,6 +2,12 @@
 
 The exercises from the @iamtrask book [Grokking Deep Learning](https://manning.com/books/grokking-deep-learning) implemented in rust.
 
+This crate isn't published, because ideally you'd do this on your own, but if you insist
+
+```
+cargo add grokking_deep_learning_rs --git https://github.com/suyash/grokking-deep-learning-rs
+```
+
 This crate is structured as a library, with the core library describing some common primitives used throughout and the individual chapters implemented in the exercises. To run the exercises from a particular chapter, for example chapter 12
 
 ```
@@ -16,7 +22,7 @@ The Chapter 13 core components were extracted into the core library, so they cou
 
 So, something like
 
-```rs
+```rust
 use rulinalg::matrix::Matrix;
 
 use grokking_deep_learning_rs::activations::{Sigmoid, Tanh};
