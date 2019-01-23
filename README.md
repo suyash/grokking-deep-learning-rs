@@ -12,7 +12,54 @@ Currently this uses [rulinalg](https://docs.rs/rulinalg) for matrix operations, 
 
 As a result of slower matmul, chapter 8 onwards, certain examples are smaller in size compared to the python examples.
 
-In Chapter 13, for the recurrent neural network exercise, the training gradients are exploding. Again, like chapter 12 the dataset is extremely small compared to the one used in the Python version, but the gradients explode and go to NaN very quickly.
+The Chapter 13 core components were extracted into the core library, so they could be used in later chapters.
+
+So, something like
+
+```rs
+use rulinalg::matrix::Matrix;
+
+use grokking_deep_learning_rs::activations::{Sigmoid, Tanh};
+use grokking_deep_learning_rs::layers::{Layer, Linear, Sequential};
+use grokking_deep_learning_rs::losses::{Loss, MSELoss};
+use grokking_deep_learning_rs::optimizers::{Optimizer, SGDOptimizer};
+use grokking_deep_learning_rs::tensor::Tensor;
+
+let data = Tensor::new_const(Matrix::new(
+    4,
+    2,
+    vec![0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
+));
+
+let target = Tensor::new_const(Matrix::new(4, 1, vec![0.0, 1.0, 0.0, 1.0]));
+
+let model = Sequential::new(vec![
+    Box::new(Linear::new(2, 3)),
+    Box::new(Tanh),
+    Box::new(Linear::new(3, 1)),
+    Box::new(Sigmoid),
+]);
+
+let criterion = MSELoss;
+let optim = SGDOptimizer::new(model.parameters(), 0.5);
+
+for _ in 0..10 {
+    let pred = model.forward(&[&data]);
+
+    // compare
+    let loss = criterion.forward(&pred[0], &target);
+
+    println!("Loss: {:?}", loss.0.borrow().data.data());
+
+    // calculate difference
+    loss.backward(Tensor::grad(Matrix::ones(1, 1)));
+
+    // learn
+    optim.step(true);
+}
+```
+
+In Chapter 13, for the recurrent neural network exercise, the training gradients are vanishing. Again, like chapter 12 the dataset is extremely small compared to the one used in the Python version, but the gradients vanish and go to NaN very quickly.
 
 # License
 

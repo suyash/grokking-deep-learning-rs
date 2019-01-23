@@ -3,6 +3,12 @@ use rand::distributions::{Bernoulli, Distribution};
 use rand::{thread_rng, Rng};
 use rulinalg::matrix::{BaseMatrix, BaseMatrixMut, Matrix as RulinalgMatrix};
 
+pub mod activations;
+pub mod layers;
+pub mod losses;
+pub mod optimizers;
+pub mod tensor;
+
 pub type Vector = Vec<f64>;
 pub type Matrix = Vec<Vec<f64>>;
 
