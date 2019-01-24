@@ -19,11 +19,11 @@ pub trait Layer {
 
 pub struct Linear {
     weights: Tensor,
-    bias: Tensor,
+    bias: Option<Tensor>,
 }
 
 impl Linear {
-    pub fn new(n_inputs: usize, n_outputs: usize) -> Linear {
+    pub fn new(n_inputs: usize, n_outputs: usize, bias: bool) -> Linear {
         let distribution = Uniform::new(0.0, 1.0);
 
         let weights = Tensor::new_const(Matrix::new(
@@ -32,7 +32,11 @@ impl Linear {
             generate_random_vector(n_inputs * n_outputs, 0.5, 0.0, &distribution),
         ));
 
-        let bias = Tensor::new_const(Matrix::zeros(1, n_outputs));
+        let bias = if bias {
+            Some(Tensor::new_const(Matrix::zeros(1, n_outputs)))
+        } else {
+            None
+        };
 
         Linear { weights, bias }
     }
@@ -41,11 +45,17 @@ impl Linear {
 impl Layer for Linear {
     fn forward(&self, inputs: &[&Tensor]) -> Vec<Tensor> {
         let rows = inputs[0].0.borrow().data.rows();
-        vec![&inputs[0].dot(&self.weights) + &self.bias.expand(0, rows)]
+        match &self.bias {
+            None => vec![inputs[0].dot(&self.weights)],
+            Some(bias) => vec![&inputs[0].dot(&self.weights) + &bias.expand(0, rows)],
+        }
     }
 
     fn parameters(&self) -> Vec<&Tensor> {
-        vec![&self.weights, &self.bias]
+        match &self.bias {
+            None => vec![&self.weights],
+            Some(bias) => vec![&self.weights, bias],
+        }
     }
 }
 
@@ -143,9 +153,9 @@ impl RNNCell {
         n_outputs: usize,
         activation: Box<dyn Layer>,
     ) -> RNNCell {
-        let w_ih = Linear::new(n_inputs, n_hidden);
-        let w_hh = Linear::new(n_hidden, n_hidden);
-        let w_ho = Linear::new(n_hidden, n_outputs);
+        let w_ih = Linear::new(n_inputs, n_hidden, true);
+        let w_hh = Linear::new(n_hidden, n_hidden, true);
+        let w_ho = Linear::new(n_hidden, n_outputs, true);
 
         RNNCell {
             n_hidden,
