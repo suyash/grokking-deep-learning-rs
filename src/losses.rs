@@ -6,6 +6,7 @@ pub trait Loss {
     fn forward(&self, pred: &Tensor, target: &Tensor) -> Tensor;
 }
 
+#[derive(Debug)]
 pub struct MSELoss;
 
 impl Loss for MSELoss {
@@ -14,6 +15,7 @@ impl Loss for MSELoss {
     }
 }
 
+#[derive(Debug)]
 pub struct CrossEntropyLoss;
 
 impl Loss for CrossEntropyLoss {

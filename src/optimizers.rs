@@ -8,6 +8,7 @@ pub trait Optimizer {
     fn step(&self, zero: bool);
 }
 
+#[derive(Debug)]
 pub struct SGDOptimizer<'a> {
     parameters: Vec<&'a Tensor>,
     alpha: f64,

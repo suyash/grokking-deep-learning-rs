@@ -3,6 +3,7 @@
 use crate::layers::Layer;
 use crate::tensor::Tensor;
 
+#[derive(Debug)]
 pub struct Sigmoid;
 
 impl Layer for Sigmoid {
@@ -11,6 +12,7 @@ impl Layer for Sigmoid {
     }
 }
 
+#[derive(Debug)]
 pub struct Tanh;
 
 impl Layer for Tanh {
@@ -19,6 +21,7 @@ impl Layer for Tanh {
     }
 }
 
+#[derive(Debug)]
 pub struct Relu;
 
 impl Layer for Relu {

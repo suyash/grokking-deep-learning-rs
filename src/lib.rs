@@ -1,3 +1,5 @@
+#![deny(missing_debug_implementations)]
+
 use datasets::Dataset;
 use rand::distributions::{Bernoulli, Distribution};
 use rand::{thread_rng, Rng};

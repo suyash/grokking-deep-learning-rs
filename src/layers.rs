@@ -1,6 +1,7 @@
 //! This was extracted from the Chapter 13 exercises and moved into the core library so it could be used in later chapters.
 
 use std::iter::FromIterator;
+use std::fmt;
 
 use rand::distributions::Uniform;
 use rulinalg::matrix::{BaseMatrix, Matrix};
@@ -17,6 +18,7 @@ pub trait Layer {
     }
 }
 
+#[derive(Debug)]
 pub struct Linear {
     weights: Tensor,
     bias: Option<Tensor>,
@@ -63,6 +65,12 @@ pub struct Sequential {
     layers: Vec<Box<dyn Layer>>,
 }
 
+impl fmt::Debug for Sequential {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Sequential {{  }}")
+    }
+}
+
 impl Sequential {
     pub fn new(layers: Vec<Box<dyn Layer>>) -> Self {
         Sequential { layers }
@@ -95,6 +103,7 @@ impl Layer for Sequential {
     }
 }
 
+#[derive(Debug)]
 pub struct Embedding {
     weights: Tensor,
 }
@@ -144,6 +153,12 @@ pub struct RNNCell {
     w_hh: Linear,
     w_ho: Linear,
     activation: Box<dyn Layer>,
+}
+
+impl fmt::Debug for RNNCell {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "RNNCell {{ n_hidden: {:?}, w_ih: {:?}, w_hh: {:?}, w_ho: {:?} }}", self.n_hidden, self.w_ih, self.w_hh, self.w_ho)
+    }
 }
 
 impl RNNCell {
