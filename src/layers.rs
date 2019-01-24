@@ -1,7 +1,7 @@
 //! This was extracted from the Chapter 13 exercises and moved into the core library so it could be used in later chapters.
 
-use std::iter::FromIterator;
 use std::fmt;
+use std::iter::FromIterator;
 
 use rand::distributions::Uniform;
 use rulinalg::matrix::{BaseMatrix, Matrix};
@@ -157,7 +157,11 @@ pub struct RNNCell {
 
 impl fmt::Debug for RNNCell {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "RNNCell {{ n_hidden: {:?}, w_ih: {:?}, w_hh: {:?}, w_ho: {:?} }}", self.n_hidden, self.w_ih, self.w_hh, self.w_ho)
+        write!(
+            f,
+            "RNNCell {{ n_hidden: {:?}, w_ih: {:?}, w_hh: {:?}, w_ho: {:?} }}",
+            self.n_hidden, self.w_ih, self.w_hh, self.w_ho
+        )
     }
 }
 
@@ -206,5 +210,89 @@ impl Layer for RNNCell {
         ans.append(&mut self.w_hh.parameters());
         ans.append(&mut self.w_ho.parameters());
         ans
+    }
+}
+
+#[derive(Debug)]
+pub struct LSTMCell {
+    xf: Linear,
+    xi: Linear,
+    xo: Linear,
+    xc: Linear,
+
+    hf: Linear,
+    hi: Linear,
+    ho: Linear,
+    hc: Linear,
+
+    w_ho: Linear,
+
+    n_hidden: usize,
+}
+
+impl LSTMCell {
+    pub fn new(n_inputs: usize, n_hidden: usize, n_outputs: usize) -> LSTMCell {
+        LSTMCell {
+            xf: Linear::new(n_inputs, n_hidden, true),
+            xi: Linear::new(n_inputs, n_hidden, true),
+            xo: Linear::new(n_inputs, n_hidden, true),
+            xc: Linear::new(n_inputs, n_hidden, true),
+
+            hf: Linear::new(n_hidden, n_hidden, false),
+            hi: Linear::new(n_hidden, n_hidden, false),
+            ho: Linear::new(n_hidden, n_hidden, false),
+            hc: Linear::new(n_hidden, n_hidden, false),
+
+            w_ho: Linear::new(n_hidden, n_outputs, false),
+
+            n_hidden,
+        }
+    }
+
+    pub fn create_start_state(&self, batch_size: usize) -> (Tensor, Tensor) {
+        let mut h = Matrix::zeros(batch_size, self.n_hidden);
+        let mut c = Matrix::zeros(batch_size, self.n_hidden);
+
+        for i in 0..batch_size {
+            h[[i, 0]] = 1.0;
+            c[[i, 0]] = 1.0;
+        }
+
+        (Tensor::new_const(h), Tensor::new_const(c))
+    }
+}
+
+impl Layer for LSTMCell {
+    #[allow(clippy::many_single_char_names)]
+    fn forward(&self, inputs: &[&Tensor]) -> Vec<Tensor> {
+        let (input, prev_hidden, prev_cell) = (inputs[0], inputs[1], inputs[2]);
+
+        let f = (&self.xf.forward(&[input])[0] + &self.hf.forward(&[prev_hidden])[0]).sigmoid();
+        let i = (&self.xi.forward(&[input])[0] + &self.hi.forward(&[prev_hidden])[0]).sigmoid();
+        let o = (&self.xo.forward(&[input])[0] + &self.ho.forward(&[prev_hidden])[0]).sigmoid();
+
+        let g = (&self.xc.forward(&[input])[0] + &self.hc.forward(&[prev_hidden])[0]).tanh();
+
+        let c = &(&f * prev_cell) + &(&i * &g);
+        let h = &o * &c.tanh();
+
+        let output = self.w_ho.forward(&[&h]).remove(0);
+
+        vec![output, h, c]
+    }
+
+    fn parameters(&self) -> Vec<&Tensor> {
+        self.xf
+            .parameters()
+            .into_iter()
+            .chain(self.xi.parameters().into_iter())
+            .chain(self.xo.parameters().into_iter())
+            .chain(self.xc.parameters().into_iter())
+            .chain(self.hf.parameters().into_iter())
+            .chain(self.hi.parameters().into_iter())
+            .chain(self.ho.parameters().into_iter())
+            .chain(self.hc.parameters().into_iter())
+            .chain(self.w_ho.parameters().into_iter())
+            .collect()
     }
 }
