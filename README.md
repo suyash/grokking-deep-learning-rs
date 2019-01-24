@@ -16,6 +16,12 @@ cargo run --example chapter12
 
 Currently this uses [rulinalg](https://docs.rs/rulinalg) for matrix operations, which uses a Rust implementation of `dgemm` and provides a 3x performance over normal ijk multiplication (see included benchmark). However, it still isn't as fast as numpy because it isn't multi-threaded. Currently working on something of my own.
 
+The __datasets__ are extracted into a [separate library crate](https://github.com/suyash/datasets), which currently provides functions for loading 4 datasets, and an iterator for batching and shuffling. Planning to add more. Can be added using
+
+```
+cargo add datasets --git https://github.com/suyash/datasets
+```
+
 As a result of slower matmul, chapter 8 onwards, certain examples are smaller in size compared to the python examples.
 
 The Chapter 13 core components were extracted into the core library, so they could be used in later chapters.
@@ -66,6 +72,8 @@ for _ in 0..10 {
 ```
 
 In Chapter 13, for the recurrent neural network exercise, the training gradients are vanishing. Again, like chapter 12 the dataset is extremely small compared to the one used in the Python version, but the gradients vanish and go to NaN very quickly.
+
+In Chapter 14 also, the pattern of RNN and LSTM examples exploding and loss going to NaN is present in the current implementation. There seems to be some kind of logic bomb in the code, where something is not doing what I think it does, still investigating.
 
 # License
 
