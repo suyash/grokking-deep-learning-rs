@@ -335,8 +335,8 @@ fn layers_which_contain_layers() {
     let target = Tensor::new_const(Matrix::new(4, 1, vec![0.0, 1.0, 0.0, 1.0]));
 
     let model = Sequential::new(vec![
-        Box::new(Linear::new(2, 3)),
-        Box::new(Linear::new(3, 1)),
+        Box::new(Linear::new(2, 3, false)),
+        Box::new(Linear::new(3, 1, false)),
     ]);
 
     let optim = SGDOptimizer::new(model.parameters(), 0.05);
@@ -367,8 +367,8 @@ fn loss_function_layers() {
     let target = Tensor::new_const(Matrix::new(4, 1, vec![0.0, 1.0, 0.0, 1.0]));
 
     let model = Sequential::new(vec![
-        Box::new(Linear::new(2, 3)),
-        Box::new(Linear::new(3, 1)),
+        Box::new(Linear::new(2, 3, false)),
+        Box::new(Linear::new(3, 1, false)),
     ]);
 
     let criterion = MSELoss;
@@ -402,9 +402,9 @@ fn nonlinearity_layers() {
     let target = Tensor::new_const(Matrix::new(4, 1, vec![0.0, 1.0, 0.0, 1.0]));
 
     let model = Sequential::new(vec![
-        Box::new(Linear::new(2, 3)),
+        Box::new(Linear::new(2, 3, false)),
         Box::new(Tanh),
-        Box::new(Linear::new(3, 1)),
+        Box::new(Linear::new(3, 1, false)),
         Box::new(Sigmoid),
     ]);
 
@@ -436,7 +436,7 @@ fn embedding_layer() {
     let model = Sequential::new(vec![
         Box::new(Embedding::new(5, 3)),
         Box::new(Tanh),
-        Box::new(Linear::new(3, 1)),
+        Box::new(Linear::new(3, 1, true)),
         Box::new(Sigmoid),
     ]);
 
@@ -468,7 +468,7 @@ fn cross_entropy_loss() {
     let model = Sequential::new(vec![
         Box::new(Embedding::new(3, 3)),
         Box::new(Tanh),
-        Box::new(Linear::new(3, 4)),
+        Box::new(Linear::new(3, 4, true)),
     ]);
 
     let criterion = CrossEntropyLoss;
