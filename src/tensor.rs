@@ -75,17 +75,13 @@ impl TensorImpl {
                     grad.borrow().data.clone(),
                 )))),
                 Some(current_grad) => {
-                    {
-                        let current_grad_data = &mut current_grad.borrow_mut().data;
-                        let current_grad_raw = current_grad_data.mut_data();
+                    let new_grad_data = {
+                        let current_grad_data = &current_grad.borrow().data;
                         let grad_data = &grad.borrow().data;
-                        let grad = grad_data.data();
-                        for i in 0..grad.len() {
-                            current_grad_raw[i] += grad[i];
-                        }
-                    }
+                        current_grad_data + grad_data
+                    };
 
-                    Some(current_grad)
+                    Some(Rc::new(RefCell::new(TensorImpl::grad(new_grad_data))))
                 }
             };
 
@@ -122,13 +118,8 @@ impl TensorImpl {
                             .backward(Rc::clone(grad), Some(self.id));
                         {
                             let data = &grad.borrow().data;
-                            let data_data: Vec<f64> = data.data().iter().map(|v| -v).collect();
                             creators[1].borrow_mut().backward(
-                                Rc::new(RefCell::new(TensorImpl::grad(Matrix::new(
-                                    data.rows(),
-                                    data.cols(),
-                                    data_data,
-                                )))),
+                                Rc::new(RefCell::new(TensorImpl::grad(-data))),
                                 Some(self.id),
                             );
                         }
@@ -138,25 +129,13 @@ impl TensorImpl {
 
                         let grad0 = {
                             let grad0 = &creators[1].borrow().data;
-                            let grad0_data: Vec<f64> = grad0
-                                .data()
-                                .iter()
-                                .zip(grad.data().iter())
-                                .map(|(a, b)| a * b)
-                                .collect();
-                            let grad0 = Matrix::new(grad0.rows(), grad0.cols(), grad0_data);
+                            let grad0 = grad0.elemul(grad);
                             Rc::new(RefCell::new(TensorImpl::grad(grad0)))
                         };
 
                         let grad1 = {
                             let grad1 = &creators[0].borrow().data;
-                            let grad1_data: Vec<f64> = grad1
-                                .data()
-                                .iter()
-                                .zip(grad.data().iter())
-                                .map(|(a, b)| a * b)
-                                .collect();
-                            let grad1 = Matrix::new(grad1.rows(), grad1.cols(), grad1_data);
+                            let grad1 = grad1.elemul(grad);
                             Rc::new(RefCell::new(TensorImpl::grad(grad1)))
                         };
 
@@ -249,7 +228,7 @@ impl TensorImpl {
                     }
                     Operation::Sigmoid => {
                         let new_grad = {
-                            let data = &creators[0].borrow().data;
+                            let data = &self.data;
                             let grad = &grad.borrow().data;
 
                             let mut new_grad = Matrix::zeros(grad.rows(), grad.cols());
@@ -270,7 +249,7 @@ impl TensorImpl {
                     }
                     Operation::Tanh => {
                         let new_grad = {
-                            let data = &creators[0].borrow().data;
+                            let data = &self.data;
                             let grad = &grad.borrow().data;
 
                             let mut new_grad = Matrix::zeros(grad.rows(), grad.cols());
@@ -291,7 +270,7 @@ impl TensorImpl {
                     }
                     Operation::Relu => {
                         let new_grad = {
-                            let data = &creators[0].borrow().data;
+                            let data = &self.data;
                             let grad = &grad.borrow().data;
 
                             let mut new_grad = Matrix::zeros(grad.rows(), grad.cols());
