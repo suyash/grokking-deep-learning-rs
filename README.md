@@ -71,9 +71,7 @@ for _ in 0..10 {
 }
 ```
 
-In Chapter 13, for the recurrent neural network exercise, the training gradients are vanishing. Again, like chapter 12 the dataset is extremely small compared to the one used in the Python version, but the gradients vanish and go to NaN very quickly.
-
-In Chapter 14 also, the pattern of RNN and LSTM examples exploding and loss going to NaN is present in the current implementation. There seems to be some kind of logic bomb in the code, where something is not doing what I think it does, still investigating.
+In Chapter 14, the RNN and LSTM examples have vanishing gradients and loss keeps going to NaN. There seems to be some kind of logic bomb in the code, where something is not doing what I think it does, still investigating.
 
 # License
 
