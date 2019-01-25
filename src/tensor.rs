@@ -521,7 +521,7 @@ impl Tensor {
                 loss += -current_loss;
             }
 
-            loss /= -(data.rows() as f64);
+            loss /= data.rows() as f64;
 
             (m, target_dist, loss)
         };
