@@ -71,9 +71,7 @@ impl TensorImpl {
             }
 
             self.grad = match self.grad.take() {
-                None => Some(Rc::new(RefCell::new(TensorImpl::grad(
-                    grad.borrow().data.clone(),
-                )))),
+                None => Some(Rc::clone(&grad)),
                 Some(current_grad) => {
                     let new_grad_data = {
                         let current_grad_data = &current_grad.borrow().data;
