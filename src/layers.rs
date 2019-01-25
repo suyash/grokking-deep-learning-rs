@@ -105,7 +105,7 @@ impl Layer for Sequential {
 
 #[derive(Debug)]
 pub struct Embedding {
-    weights: Tensor,
+    pub weights: Tensor,
 }
 
 impl Embedding {
