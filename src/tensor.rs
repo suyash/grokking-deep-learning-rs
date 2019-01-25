@@ -318,7 +318,7 @@ impl TensorImpl {
                             let mut new_grad = Matrix::zeros(data.rows(), data.cols());
                             for (i, ix) in indices.iter().enumerate() {
                                 for j in 0..data.cols() {
-                                    new_grad[[*ix, j]] = grad[[i, j]];
+                                    new_grad[[*ix, j]] += grad[[i, j]];
                                 }
                             }
 
