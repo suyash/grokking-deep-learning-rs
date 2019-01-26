@@ -16,14 +16,14 @@ use grokking_deep_learning_rs::{
 };
 
 fn main() {
-    // println!("\n3 Layer Network on MNIST\n");
-    // three_layer_mnist().unwrap();
+    println!("\n3 Layer Network on MNIST\n");
+    three_layer_mnist().unwrap();
 
-    // println!("\n3 Layer Network on MNIST with validation every 10 iterations\n");
-    // three_layer_mnist_with_validation().unwrap();
+    println!("\n3 Layer Network on MNIST with validation every 10 iterations\n");
+    three_layer_mnist_with_validation().unwrap();
 
-    // println!("\nDropout\n");
-    // three_layer_mnist_with_validation_and_dropout(0.3).unwrap();
+    println!("\nDropout\n");
+    three_layer_mnist_with_validation_and_dropout(0.3).unwrap();
 
     println!("\nBatched Gradient Descent with Dropout\n");
     batched_gradient_descent_with_dropout(0.5).unwrap();

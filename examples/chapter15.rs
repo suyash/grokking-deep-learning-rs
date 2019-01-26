@@ -19,8 +19,8 @@ use grokking_deep_learning_rs::optimizers::{Optimizer, SGDOptimizer};
 use grokking_deep_learning_rs::tensor::{Sum, Tensor};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // println!("\nRegular Deep Learning\n");
-    // regular_deep_learning()?;
+    println!("\nRegular Deep Learning\n");
+    regular_deep_learning()?;
 
     println!("\nFederated Deep Learning\n");
     federated_deep_learning()?;
@@ -55,7 +55,7 @@ fn regular_deep_learning() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|sentence| {
             sentence
-                .into_iter()
+                .iter()
                 .map(|word| word_index[&word] as f64)
                 .collect::<Vec<_>>()
         })
@@ -65,7 +65,7 @@ fn regular_deep_learning() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|sentence| {
             sentence
-                .into_iter()
+                .iter()
                 .map(|word| word_index[&word] as f64)
                 .collect::<Vec<_>>()
         })
@@ -127,6 +127,7 @@ fn regular_deep_learning() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(clippy::needless_range_loop, clippy::too_many_arguments)]
 fn train(
     model: Embedding,
     data: Vec<(Vec<f64>, f64)>,
@@ -189,21 +190,21 @@ fn train(
 
 fn test(
     model: &Embedding,
-    data: &Vec<(Vec<f64>, f64)>,
+    data: &[(Vec<f64>, f64)],
     dataset_size: usize,
     max_sentence_len: usize,
 ) -> f64 {
     let mut accuracy = 0.0;
 
-    for i in 0..(dataset_size / 2) {
-        let (input, output) = &data[i];
+    for item in data.iter().take(dataset_size / 2) {
+        let (input, output) = item;
         let input = Tensor::new_const(Matrix::new(1, max_sentence_len, input.clone()));
         let prediction = model.forward(&[&input]).remove(0);
         let prediction = prediction.sum(0);
         let prediction = prediction.sigmoid();
 
-        if (prediction.0.borrow().data.data()[0] >= 0.5 && output == &1.0)
-            || (prediction.0.borrow().data.data()[0] < 0.5 && output == &0.0)
+        if (prediction.0.borrow().data.data()[0] >= 0.5 && (output - 1.0).abs() < std::f64::EPSILON)
+            || (prediction.0.borrow().data.data()[0] < 0.5 && (output - 0.0).abs() < std::f64::EPSILON)
         {
             accuracy += 1.0;
         }
@@ -221,12 +222,12 @@ fn parse_dataset(
         .take(dataset_size)
         .map(|email| {
             email
-                .split("\n")
+                .split('\n')
                 .map(|line| line.split_whitespace())
                 .flat_map(|v| v)
                 .map(|v| {
                     v.chars()
-                        .filter(|c| (c >= &'a' && c <= &'z') || (c >= &'A' && c <= &'Z'))
+                        .filter(|c| (*c >= 'a' && *c <= 'z') || (*c >= 'A' && *c <= 'Z'))
                         .collect::<String>()
                 })
                 .collect::<Vec<_>>()
@@ -272,7 +273,7 @@ fn federated_deep_learning() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|sentence| {
             sentence
-                .into_iter()
+                .iter()
                 .map(|word| word_index[&word] as f64)
                 .collect::<Vec<_>>()
         })
@@ -282,7 +283,7 @@ fn federated_deep_learning() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|sentence| {
             sentence
-                .into_iter()
+                .iter()
                 .map(|word| word_index[&word] as f64)
                 .collect::<Vec<_>>()
         })
