@@ -124,6 +124,20 @@ impl Embedding {
             )),
         }
     }
+
+    pub fn from_weights(weights: Matrix<f64>) -> Embedding {
+        Embedding {
+            weights: Tensor::new_const(weights),
+        }
+    }
+}
+
+impl Clone for Embedding {
+    fn clone(&self) -> Embedding {
+        Embedding {
+            weights: Tensor::new_const(self.weights.0.borrow().data.clone()),
+        }
+    }
 }
 
 impl Layer for Embedding {

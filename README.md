@@ -1,6 +1,6 @@
 # Grokking Deep Learning Rust
 
-The exercises from the @iamtrask book [Grokking Deep Learning](https://manning.com/books/grokking-deep-learning) implemented in rust.
+The exercises from the [@iamtrask](https://iamtrask.github.io) book [Grokking Deep Learning](https://manning.com/books/grokking-deep-learning) implemented in rust.
 
 This crate isn't published, because ideally you'd do this on your own, but if you insist
 
