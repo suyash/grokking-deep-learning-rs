@@ -73,6 +73,8 @@ for _ in 0..10 {
 
 In Chapter 14, the RNN and LSTM examples have vanishing gradients and loss keeps going to NaN. There seems to be some kind of logic bomb in the code, where something is not doing what I think it does, still investigating.
 
+For Chapter 15, the encrypted federated learning exercise is not implemented. [There does exist a crate](https://crates.io/crates/paillier) for paillier homomorphic crypto, but the current implementation only works with integers and BigInts, not floating point numbers. Will try to see how to get it to work.
+
 # License
 
 This project is licensed under either of
@@ -87,5 +89,5 @@ at your option.
 ### Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in Grokking-Deep-Learning-Rust by you, as defined in the Apache-2.0 license, shall be
+for inclusion in this work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
