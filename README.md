@@ -71,7 +71,7 @@ for _ in 0..10 {
 }
 ```
 
-In Chapter 14, the RNN and LSTM examples have vanishing gradients and loss keeps going to NaN. There seems to be some kind of logic bomb in the code, where something is not doing what I think it does, still investigating.
+In Chapter 14, the RNN and LSTM examples have vanishing gradients and loss keeps going to NaN. There seems to be some kind of logic bomb in the code, where something is not doing what I think it does, still investigating. I tried reproducing the problem in chapter 13 final exercise and also implemented [min-char-rnn.py](https://gist.github.com/karpathy/d4dee566867f8291f086) in [Rust](https://gist.github.com/suyash/07b2ae4822f717d3edadb09a0f79ec57), but no luck so far.
 
 For Chapter 15, the encrypted federated learning exercise is not implemented. [There does exist a crate](https://crates.io/crates/paillier) for paillier homomorphic crypto, but the current implementation only works with integers and BigInts, not floating point numbers. Will try to see how to get it to work.
 
