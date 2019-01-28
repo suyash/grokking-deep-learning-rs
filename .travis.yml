@@ -6,5 +6,9 @@ rust:
     - nightly
 
 script:
-    - cargo test --verbose --all
-    - cargo bench --verbose --all
+    - cargo test
+
+after_success:
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
+        cargo bench;
+    fi
