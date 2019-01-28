@@ -1,5 +1,7 @@
 # Grokking Deep Learning Rust
 
+[![Build Status](https://travis-ci.com/suyash/grokking-deep-learning-rs.svg?branch=master)](https://travis-ci.com/suyash/grokking-deep-learning-rs)
+
 The exercises from the [@iamtrask](https://iamtrask.github.io) book [Grokking Deep Learning](https://manning.com/books/grokking-deep-learning) implemented in rust.
 
 This crate isn't published, because ideally you'd do this on your own, but if you insist
