@@ -11,4 +11,4 @@ rulinalg = "0.4.2"
 
 [dev-dependencies]
 indicatif = "0.11.0"
-paillier = { version = "0.2.0", default-features = false, features = ["usegmp", "keygen"] }
+# paillier = { version = "0.2.0", default-features = false, features = ["usegmp", "keygen"] }
